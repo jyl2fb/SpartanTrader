@@ -1,0 +1,17 @@
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\bin\Debug\SpartanTrader1.dll
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\bin\Debug\SpartanTrader1.pdb
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\bin\Debug\SpartanTrader1.xml
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\bin\Debug\SpartanTrader1.dll.manifest
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\bin\Debug\SpartanTrader1.vsto
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\bin\Debug\SpartanTrader1.xlsx
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\bin\Debug\Microsoft.Office.Tools.Common.v4.0.Utilities.dll
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\bin\Debug\Microsoft.Office.Tools.Excel.v4.0.Utilities.dll
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\obj\Debug\SpartanTrader1.vbprojAssemblyReference.cache
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\obj\Debug\SpartanTrader1.Markets.resources
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\obj\Debug\SpartanTrader1.Resources.resources
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\obj\Debug\SpartanTrader1.RibbonST.resources
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\obj\Debug\SpartanTrader1.vbproj.GenerateResource.cache
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\obj\Debug\SpartanTrader1.vbproj.CopyComplete
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\obj\Debug\SpartanTrader1.dll
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\obj\Debug\SpartanTrader1.xml
+C:\Users\Joeyz\source\repos\SpartanTrader1\SpartanTrader1\obj\Debug\SpartanTrader1.pdb
