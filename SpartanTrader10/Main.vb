@@ -1,5 +1,5 @@
 ﻿Module Main
-
+    'testing my change
 
     Public Sub Initialization()
         Globals.ThisWorkbook.Application.DisplayFormulaBar = False
