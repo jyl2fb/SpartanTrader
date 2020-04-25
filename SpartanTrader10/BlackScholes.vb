@@ -2,32 +2,32 @@
     Public Function GetVol(symbol As String) As Double
         symbol = symbol.Trim()
         Select Case symbol
-            Case "AAPL"
-                Return 0.3
-            Case "AMZ"
-                Return 0.4
-            Case "BIDU"
-                Return 0.4
-            Case "FB"
-                Return 0.35
-            Case "GOOG"
-                Return 0.35
-            Case "LUV"
-                Return 0.25
-            Case "MSFT"
-                Return 0.35
-            Case "SBUX"
-                Return 0.2
-            Case "SNAP"
-                Return 1.1
-            Case "TSLA"
-                Return 0.4
-            Case "TEVA"
-                Return 0.4
-            Case "WMT"
-                Return 0.35
+            Case "ABT"
+                Return 0.745
+            Case "AMD"
+                Return 0.9505
+            Case "APPN"
+                Return 1.173
+            Case "CCL"
+                Return 1.888
+            Case "F"
+                Return 0.9155
+            Case "JNJ"
+                Return 0.629
+            Case "KO"
+                Return 0.6325
+            Case "PENN"
+                Return 2.6875
+            Case "PSA"
+                Return 0.6845
+            Case "SHOP"
+                Return 1.0
+            Case "SPCE"
+                Return 1.7685
+            Case "ZM"
+                Return 0.896
             Case Else
-                Return 0.3
+                Return 0.0
         End Select
     End Function
 
