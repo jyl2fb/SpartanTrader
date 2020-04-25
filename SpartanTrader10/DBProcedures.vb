@@ -170,5 +170,19 @@
             End If
         Next
     End Sub
+
+    Public Function IsThereData() As Boolean
+        Try
+            myCommand.CommandText = "Select count(*) from StockMarket"
+            If myCommand.ExecuteScalar() > 0 Then
+                Return True
+            Else
+                Return False
+            End If
+        Catch ex As Exception
+            Return False
+        End Try
+    End Function
+
 End Module
 

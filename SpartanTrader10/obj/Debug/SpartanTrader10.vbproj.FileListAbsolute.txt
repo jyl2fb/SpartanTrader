@@ -20,3 +20,15 @@ C:\Users\Joeyz\source\repos\SpartanTrader10\SpartanTrader10\bin\Debug\SpartanTra
 C:\Users\Joeyz\source\repos\SpartanTrader10\SpartanTrader10\bin\Debug\Microsoft.Office.Tools.Common.v4.0.Utilities.dll
 C:\Users\Joeyz\source\repos\SpartanTrader10\SpartanTrader10\bin\Debug\Microsoft.Office.Tools.Excel.v4.0.Utilities.dll
 C:\Users\Joeyz\source\repos\SpartanTrader10\SpartanTrader10\obj\Debug\SpartanTrader10.vbproj.CopyComplete
+C:\Users\Joeyzect\Source\Repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader10.vbprojAssemblyReference.cache
+C:\Users\Joeyzect\Source\Repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader1.Dashboard.resources
+C:\Users\Joeyzect\Source\Repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader1.Markets.resources
+C:\Users\Joeyzect\Source\Repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader1.Resources.resources
+C:\Users\Joeyzect\Source\Repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader1.Parameters.resources
+C:\Users\Joeyzect\Source\Repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader1.RibbonST.resources
+C:\Users\Joeyzect\Source\Repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader1.FinCharts.resources
+C:\Users\Joeyzect\Source\Repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader1.Transactions.resources
+C:\Users\Joeyzect\Source\Repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader10.vbproj.GenerateResource.cache
+C:\Users\Joeyzect\Source\Repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader1.dll
+C:\Users\Joeyzect\Source\Repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader1.xml
+C:\Users\Joeyzect\Source\Repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader1.pdb
