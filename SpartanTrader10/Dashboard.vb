@@ -162,4 +162,80 @@ Public Class Dashboard
         Next
 
     End Sub
+
+    Public Sub SetupTEChart()
+        'create the table
+        If myDataSet.Tables.Contains("TETbl") Then
+            myDataSet.Tables("TETbl").Clear()
+        Else ' create a new table in the dataset
+            myDataSet.Tables.Add("TETbl")
+            myDataSet.Tables("TETbl").Columns.Add("Date", GetType(Date))
+            myDataSet.Tables("TETbl").Columns.Add("TaTPV", GetType(Double))
+            myDataSet.Tables("TETbl").Columns.Add("NoHedge", GetType(Double))
+            myDataSet.Tables("TETbl").Columns.Add("TPV", GetType(Double))
+        End If
+        TELO.DataSource = myDataSet.Tables("TETbl")
+
+        'format the chart - feel free to change any formatting
+        TEChart.ChartType = Excel.XlChartType.xlLine
+        'TEChart.ChartStyle = 6
+        'TEChart.ApplyLayout(3)
+        TEChart.HasTitle = False
+
+        'format the y axis as $
+        Dim y As Excel.Axis = TEChart.Axes(Excel.XlAxisType.xlValue)
+        y.HasTitle = False
+        y.HasMinorGridlines = True
+        y.MinorTickMark = Excel.XlTickMark.xlTickMarkOutside
+        y.TickLabels.NumberFormat = "$#,###"
+        y.MinimumScaleIsAuto = False
+        y.MaximumScaleIsAuto = True
+
+        'format the x axis as dates
+        Dim x As Excel.Axis = TEChart.Axes(Excel.XlAxisType.xlCategory)
+        x.CategoryType = Excel.XlCategoryType.xlTimeScale
+        x.MajorTickMark = Excel.XlTickMark.xlTickMarkCross
+        x.BaseUnit = Excel.XlTimeUnit.xlDays
+        x.TickLabels.NumberFormat = "[$-409]d-mmm;@"
+
+        Dim s As Excel.SeriesCollection = TEChart.SeriesCollection
+        s(0).Format.Line.Weight = 2
+        s(0).Format.Line.ForeColor.RGB = System.Drawing.Color.SteelBlue
+        s(1).Format.Line.Weight = 2
+        s(1).Format.Line.ForeColor.RGB = System.Drawing.Color.Gray
+        s(2).Format.Line.Weight = 2
+        s(2).Format.Line.ForeColor.RGB = System.Drawing.Color.Orange
+    End Sub
+
+    Public Sub UpdateTEChart(targetDate As Date)
+        Dim interestOnInitialCA As Double = 0
+        Dim ts As TimeSpan = targetDate.Date - startDate.Date
+        Dim t As Double = ts.Days / 365.25
+
+        interestOnInitialCA = initialCAccount * (Math.Exp(riskFreeRate * t) - 1)
+
+        Dim tempRow As DataRow
+        tempRow = myDataSet.Tables("TETbl").Rows.Add()
+        tempRow("Date") = targetDate.ToShortDateString
+        tempRow("TPV") = TPV
+        tempRow("TaTPV") = TaTPV
+        tempRow("NoHedge") = IPvalue + initialCAccount + interestOnInitialCA
+
+        TEChart.SetSourceData(TELO.Range)
+
+        ' these lines set the scale of the chart for better viewing
+        Dim y As Excel.Axis = TEChart.Axes(Excel.XlAxisType.xlValue)
+        y.MinimumScale = Math.Truncate((FindMinInTPVTrackingTable() / 10000000)) * 10000000
+    End Sub
+
+    Public Function FindMinInTPVTrackingTable() As Double
+        Dim tempMin As Double = 100000000
+        For Each myRow As DataRow In myDataSet.Tables("TETbl").Rows
+            tempMin = Math.Min(myRow("TPV"), tempMin)
+            tempMin = Math.Min(myRow("TaTPV"), tempMin)
+            tempMin = Math.Min(myRow("NoHedge"), tempMin)
+        Next
+        Return tempMin
+    End Function
+
 End Class

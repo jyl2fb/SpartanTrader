@@ -4,8 +4,7 @@
     Public Sub Initialization()
         Globals.ThisWorkbook.Application.DisplayFormulaBar = False
         Globals.Dashboard.TeamIDCell.Value = "TeamID: " + teamID
-        ' starting with  Beta DB
-        Globals.Ribbons.Ribbon1.AlphaTBtn_Click(Nothing, Nothing)
+        Globals.Ribbons.RibbonST.AlphaTBtn_Click(Nothing, Nothing)
     End Sub
 
     Public Sub MainProgram()
@@ -13,34 +12,37 @@
         ClearAllLO()
         lastPriceDownloadDate = "1/1/1"
         ConnectToActiveDB()
-        currentDate = DownloadCurrentDate()
-        Globals.Dashboard.DateLine.Value = currentDate.ToLongDateString()
-        DownloadStaticData()
-        DownloadTeamData(currentDate)
-        SetFinancialConstants()
+        Globals.Dashboard.SetupTEChart()
         CreateCurrentTransaction()
-        ResetAllRecommendations()
-
-        Select Case traderMode
-            Case "Manual"
-                RunDailyRoutine(currentDate)
-            Case "Simulation", "StepSim"
-                ResetToBeginningOfTournament()
-                Try
-                    Do
-                        RunDailyRoutine(currentDate)
-                        currentDate = currentDate.AddDays(1)
-                    Loop While currentDate <= GetEndDate() And traderMode <> "Manual"
-                Catch ex As Exception
-                    Exit Sub
-                End Try
-            Case "Sync", "RoboTrader"
-                'ToDo
-        End Select
-        'CalcFinancialMetrics(currentDate)
-        'CalcAllRecommendations(currentDate)
-        'DisplayFinancialMetrics(currentDate)
-        'DisplayAllRecommendations()
+        If IsThereData() = True Then
+            currentDate = DownloadCurrentDate()
+            DownloadStaticData()
+            DownloadTeamData(currentDate)
+            SetFinancialConstants()
+            CreateCurrentTransaction()
+            ResetAllRecommendations()
+            Select Case traderMode
+                Case "Manual"
+                    StopTimers()
+                    RunDailyRoutine(currentDate)
+                Case "Simulation", "StepSim"
+                    StopTimers()
+                    ResetToBeginningOfTournament()
+                    Try
+                        Do
+                            RunDailyRoutine(currentDate)
+                            currentDate = currentDate.AddDays(1)
+                        Loop While currentDate <= GetEndDate() And traderMode <> "Manual"
+                    Catch ex As Exception
+                        Exit Sub
+                    End Try
+                Case "Sync", "RoboTrader"
+                    DisplayFinancialMetrics(currentDate)
+                    StartTimers()
+            End Select
+        Else 'no data
+            WaitForData()
+        End If
     End Sub
 
     Sub ClearAllLO()
@@ -136,9 +138,10 @@
     End Sub
 
     Public Sub RunDailyRoutine(tdate As Date)
-        Globals.Dashboard.DateLine.Value = tdate.ToLongDateString
+        Globals.Dashboard.DateLine.Value = tdate.ToLongDateString()
         CalcFinancialMetrics(tdate)
         DisplayFinancialMetrics(tdate)
+        Globals.Dashboard.UpdateTEChart(tdate)
         Select Case traderMode
             Case "Manual"
                 CalcAllRecommendations(currentDate)
@@ -147,8 +150,11 @@
                 RoboExecuteAll(tdate)
             Case "StepSim"
                 RoboExecuteStepByStep(tdate)
-            Case "Sync", "RoboTrader"
-                'TODO
+            Case "Sync"
+                CalcAllRecommendations(currentDate)
+                Globals.Dashboard.DisplayAllRecommendations()
+            Case "RoboTrader"
+                RoboExecuteAll(tdate)
         End Select
     End Sub
 
@@ -161,5 +167,28 @@
         lastTransactionDate = GetStartDate()
         CalcAllRecommendations(currentDate)
         Globals.Dashboard.DisplayAllRecommendations()
+    End Sub
+
+    Public Sub WaitForData()
+        If MessageBox.Show("There is no data in the database, Dave... Would you like to wait for it?", "Hal",
+                            MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) = DialogResult.Yes Then
+            Globals.Ribbons.RibbonST.ManualTBtn.Checked = False
+            Globals.Ribbons.RibbonST.SyncTBtn.Checked = False
+            Globals.Ribbons.RibbonST.SimulationTBtn.Checked = False
+            Globals.Ribbons.RibbonST.StepSimTBtn.Checked = False
+            Globals.Ribbons.RibbonST.RoboTraderTBtn.Checked = False
+            waitingForData = True
+            traderMode = "RoboTrader"
+            StartTimers()
+        Else
+            Select Case ActiveDB
+                Case "Alpha"
+                    Globals.Ribbons.RibbonST.BetaTBtn_Click(Nothing, Nothing)
+                Case "Beta"
+                    Globals.Ribbons.RibbonST.GammaTBtn_Click(Nothing, Nothing)
+                Case "Gamma"
+                    Globals.Ribbons.RibbonST.AlphaTBtn_Click(Nothing, Nothing)
+            End Select
+        End If
     End Sub
 End Module

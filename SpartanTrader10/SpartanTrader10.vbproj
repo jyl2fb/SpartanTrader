@@ -163,6 +163,7 @@
       <DependentUpon>SpartanTrader10.xlsx</DependentUpon>
     </Compile>
     <Compile Include="ScoringRules.vb" />
+    <Compile Include="Timers.vb" />
     <Compile Include="Transaction.vb" />
     <Compile Include="Transactions.Designer.vb">
       <DependentUpon>Transactions.Designer.xml</DependentUpon>
@@ -267,17 +268,17 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>SpartanTrader1_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>SpartanTrader10_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>1FF6034AFB06FDA89DFA7E14DA5541BA885A1BDA</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>E6E2DE371EBD83F5E915D0D304E7DFE28A24749F</ManifestCertificateThumbprint>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="$(VSToolsPath)\OfficeTools\Microsoft.VisualStudio.Tools.Office.targets" Condition="'$(VSToolsPath)' != ''" />
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{BAA0C2D2-18E2-41B9-852F-F413020CAA33}">
-        <ProjectProperties HostName="SpartanTrader10.xlsx" HostPackage="{3F2B7691-D1D1-402F-9370-2704A737CF60}" OfficeVersion="15.0" VstxVersion="4.0" ApplicationType="XLS" Language="VB" TemplatesPath="VSTOTemplates" DebugInfoExeName="C:\Program Files\Microsoft Office\root\Office16\excel.exe" DebugInfoCommandLine="/x &quot;[$OUTPUT]SpartanTrader10.xlsx&quot;" />
+        <ProjectProperties HostName="SpartanTrader10.xlsx" HostPackage="{3F2B7691-D1D1-402F-9370-2704A737CF60}" OfficeVersion="15.0" VstxVersion="4.0" ApplicationType="XLS" Language="VB" TemplatesPath="VSTOTemplates" DebugInfoExeName="C:\Program Files\Microsoft Office 15\root\Office15\excel.exe" DebugInfoCommandLine="/x &quot;[$OUTPUT]SpartanTrader10.xlsx&quot;" />
         <Host Name="Excel Document" Path=".\SpartanTrader10.xlsx">
           <HostItem Name="Sheet2" Code="Dashboard.vb" CanonicalName="Sheet2" DisplayName="Dashboard" Blueprint="Dashboard.Designer.xml" GeneratedCode="Dashboard.Designer.vb" />
           <HostItem Name="Sheet5" Code="FinCharts.vb" CanonicalName="Sheet5" DisplayName="FinCharts" Blueprint="FinCharts.Designer.xml" GeneratedCode="FinCharts.Designer.vb" />

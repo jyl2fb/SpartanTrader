@@ -30,4 +30,9 @@
     Public CandidateRecList As List(Of Transaction)
 
     Public traderMode As String = ""
+
+    Public secondsLeft As Integer
+    Public tempNewDate As Date
+    Public waitingForData As Boolean
+
 End Module

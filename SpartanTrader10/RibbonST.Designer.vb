@@ -46,6 +46,12 @@
         Me.AlphaTBtn = Me.Factory.CreateRibbonToggleButton
         Me.BetaTBtn = Me.Factory.CreateRibbonToggleButton
         Me.GammaTBtn = Me.Factory.CreateRibbonToggleButton
+        Me.ModeGroup = Me.Factory.CreateRibbonGroup
+        Me.ManualTBtn = Me.Factory.CreateRibbonToggleButton
+        Me.SyncTBtn = Me.Factory.CreateRibbonToggleButton
+        Me.RoboTraderTBtn = Me.Factory.CreateRibbonToggleButton
+        Me.SimulationTBtn = Me.Factory.CreateRibbonToggleButton
+        Me.StepSimTBtn = Me.Factory.CreateRibbonToggleButton
         Me.Dashboard = Me.Factory.CreateRibbonGroup
         Me.DashboardBtn = Me.Factory.CreateRibbonButton
         Me.Group1 = Me.Factory.CreateRibbonGroup
@@ -65,19 +71,13 @@
         Me.FinChartsBtn = Me.Factory.CreateRibbonButton
         Me.Control = Me.Factory.CreateRibbonGroup
         Me.QuitBtn = Me.Factory.CreateRibbonButton
-        Me.ModeGroup = Me.Factory.CreateRibbonGroup
-        Me.ManualTBtn = Me.Factory.CreateRibbonToggleButton
-        Me.SyncTBtn = Me.Factory.CreateRibbonToggleButton
-        Me.RoboTraderTBtn = Me.Factory.CreateRibbonToggleButton
-        Me.SimulationTBtn = Me.Factory.CreateRibbonToggleButton
-        Me.StepSimBtn = Me.Factory.CreateRibbonToggleButton
         Me.Tab1.SuspendLayout()
         Me.Database.SuspendLayout()
+        Me.ModeGroup.SuspendLayout()
         Me.Dashboard.SuspendLayout()
         Me.Group1.SuspendLayout()
         Me.BI.SuspendLayout()
         Me.Control.SuspendLayout()
-        Me.ModeGroup.SuspendLayout()
         Me.SuspendLayout()
         '
         'Tab1
@@ -114,6 +114,41 @@
         '
         Me.GammaTBtn.Label = "Gamma DB"
         Me.GammaTBtn.Name = "GammaTBtn"
+        '
+        'ModeGroup
+        '
+        Me.ModeGroup.Items.Add(Me.ManualTBtn)
+        Me.ModeGroup.Items.Add(Me.SyncTBtn)
+        Me.ModeGroup.Items.Add(Me.RoboTraderTBtn)
+        Me.ModeGroup.Items.Add(Me.SimulationTBtn)
+        Me.ModeGroup.Items.Add(Me.StepSimTBtn)
+        Me.ModeGroup.Label = "Mode"
+        Me.ModeGroup.Name = "ModeGroup"
+        '
+        'ManualTBtn
+        '
+        Me.ManualTBtn.Label = "Manual"
+        Me.ManualTBtn.Name = "ManualTBtn"
+        '
+        'SyncTBtn
+        '
+        Me.SyncTBtn.Label = "Sync"
+        Me.SyncTBtn.Name = "SyncTBtn"
+        '
+        'RoboTraderTBtn
+        '
+        Me.RoboTraderTBtn.Label = "RoboTrader"
+        Me.RoboTraderTBtn.Name = "RoboTraderTBtn"
+        '
+        'SimulationTBtn
+        '
+        Me.SimulationTBtn.Label = "Simulation"
+        Me.SimulationTBtn.Name = "SimulationTBtn"
+        '
+        'StepSimTBtn
+        '
+        Me.StepSimTBtn.Label = "StepSim"
+        Me.StepSimTBtn.Name = "StepSimTBtn"
         '
         'Dashboard
         '
@@ -225,41 +260,6 @@
         Me.QuitBtn.Label = "Quit"
         Me.QuitBtn.Name = "QuitBtn"
         '
-        'ModeGroup
-        '
-        Me.ModeGroup.Items.Add(Me.ManualTBtn)
-        Me.ModeGroup.Items.Add(Me.SyncTBtn)
-        Me.ModeGroup.Items.Add(Me.RoboTraderTBtn)
-        Me.ModeGroup.Items.Add(Me.SimulationTBtn)
-        Me.ModeGroup.Items.Add(Me.StepSimBtn)
-        Me.ModeGroup.Label = "Mode"
-        Me.ModeGroup.Name = "ModeGroup"
-        '
-        'ManualTBtn
-        '
-        Me.ManualTBtn.Label = "Manual"
-        Me.ManualTBtn.Name = "ManualTBtn"
-        '
-        'SyncTBtn
-        '
-        Me.SyncTBtn.Label = "Sync"
-        Me.SyncTBtn.Name = "SyncTBtn"
-        '
-        'RoboTraderTBtn
-        '
-        Me.RoboTraderTBtn.Label = "RoboTrader"
-        Me.RoboTraderTBtn.Name = "RoboTraderTBtn"
-        '
-        'SimulationTBtn
-        '
-        Me.SimulationTBtn.Label = "Simulation"
-        Me.SimulationTBtn.Name = "SimulationTBtn"
-        '
-        'StepSimBtn
-        '
-        Me.StepSimBtn.Label = "StepSim"
-        Me.StepSimBtn.Name = "StepSimBtn"
-        '
         'RibbonST
         '
         Me.Name = "RibbonST"
@@ -269,6 +269,8 @@
         Me.Tab1.PerformLayout()
         Me.Database.ResumeLayout(False)
         Me.Database.PerformLayout()
+        Me.ModeGroup.ResumeLayout(False)
+        Me.ModeGroup.PerformLayout()
         Me.Dashboard.ResumeLayout(False)
         Me.Dashboard.PerformLayout()
         Me.Group1.ResumeLayout(False)
@@ -277,8 +279,6 @@
         Me.BI.PerformLayout()
         Me.Control.ResumeLayout(False)
         Me.Control.PerformLayout()
-        Me.ModeGroup.ResumeLayout(False)
-        Me.ModeGroup.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -312,13 +312,13 @@
     Friend WithEvents SyncTBtn As Microsoft.Office.Tools.Ribbon.RibbonToggleButton
     Friend WithEvents RoboTraderTBtn As Microsoft.Office.Tools.Ribbon.RibbonToggleButton
     Friend WithEvents SimulationTBtn As Microsoft.Office.Tools.Ribbon.RibbonToggleButton
-    Friend WithEvents StepSimBtn As Microsoft.Office.Tools.Ribbon.RibbonToggleButton
+    Friend WithEvents StepSimTBtn As Microsoft.Office.Tools.Ribbon.RibbonToggleButton
 End Class
 
 Partial Class ThisRibbonCollection
 
-    <System.Diagnostics.DebuggerNonUserCode()> _
-    Friend ReadOnly Property Ribbon1() As RibbonST
+    <System.Diagnostics.DebuggerNonUserCode()>
+    Friend ReadOnly Property RibbonST() As RibbonST
         Get
             Return Me.GetRibbon(Of RibbonST)()
         End Get

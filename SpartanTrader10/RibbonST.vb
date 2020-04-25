@@ -2,7 +2,7 @@
 
 Public Class RibbonST
 
-    Private Sub Ribbon1_Load(ByVal sender As System.Object, ByVal e As RibbonUIEventArgs) Handles MyBase.Load
+    Public Sub Ribbon1_Load(ByVal sender As System.Object, ByVal e As RibbonUIEventArgs) Handles MyBase.Load
         'Program starts here
         'Activates Ribbon
         RibbonUI.ActivateTabMso("TabAddIns")
@@ -34,11 +34,11 @@ Public Class RibbonST
         MainProgram()
     End Sub
 
-    Private Sub DashboardBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles DashboardBtn.Click
+    Public Sub DashboardBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles DashboardBtn.Click
         Globals.Dashboard.Activate()
         Globals.Dashboard.Range("G1").Select()
     End Sub
-    Private Sub TransactionsBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles TransactionsBtn.Click
+    Public Sub TransactionsBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles TransactionsBtn.Click
         Globals.Transactions.Activate()
         Globals.Transactions.TransactionsLO.DataSource = Nothing
         Application.DoEvents()
@@ -51,7 +51,7 @@ Public Class RibbonST
         Globals.Transactions.TransactionsLO.Range.Columns.AutoFit()
         Globals.Transactions.Range("A1").Select()
     End Sub
-    Private Sub StockMktBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles StockMktBtn.Click
+    Public Sub StockMktBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles StockMktBtn.Click
         Globals.Markets.Activate()
         Globals.Markets.StockMarketLO.DataSource = Nothing
         DownloadDataTableFromDB("Select * from StockMarket order by date desc", "StockMarketTbl")
@@ -63,7 +63,7 @@ Public Class RibbonST
         Globals.Markets.Range("A1").Select()
     End Sub
 
-    Private Sub OptionsMktBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles OptionsMktBtn.Click
+    Public Sub OptionsMktBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles OptionsMktBtn.Click
         Globals.Markets.Activate()
         Globals.Markets.OptionsLO.DataSource = Nothing
         DownloadDataTableFromDB("Select * from OptionMarket order by date desc", "OptionMarketTbl")
@@ -75,7 +75,7 @@ Public Class RibbonST
         Globals.Markets.Range("A1").Select()
     End Sub
 
-    Private Sub SP500Btn_Click(sender As Object, e As RibbonControlEventArgs) Handles SP500Btn.Click
+    Public Sub SP500Btn_Click(sender As Object, e As RibbonControlEventArgs) Handles SP500Btn.Click
         Globals.Markets.Activate()
         Globals.Markets.SP500LO.DataSource = Nothing
         DownloadDataTableFromDB("Select * from StockIndex order by date desc", "IndexTbl")
@@ -88,7 +88,7 @@ Public Class RibbonST
 
 
 
-    Private Sub QuitBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles QuitBtn.Click
+    Public Sub QuitBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles QuitBtn.Click
         Globals.ThisWorkbook.Application.DisplayAlerts = False
         Globals.ThisWorkbook.Application.DisplayFormulaBar = False
         If traderMode = "Simulation" Then
@@ -98,7 +98,7 @@ Public Class RibbonST
         Globals.ThisWorkbook.Application.Quit()
     End Sub
 
-    Private Sub InitialPositionsButton_Click(sender As Object, e As RibbonControlEventArgs) Handles InitialPositionsButton.Click
+    Public Sub InitialPositionsButton_Click(sender As Object, e As RibbonControlEventArgs) Handles InitialPositionsButton.Click
         Globals.Dashboard.Activate()
         Globals.Dashboard.InitialLO.DataSource = Nothing
         Application.DoEvents()
@@ -115,23 +115,22 @@ Public Class RibbonST
 
     End Sub
 
-    Private Sub AcquiredPositionsButton_Click(sender As Object, e As RibbonControlEventArgs) Handles AcquiredPositionsButton.Click
+    Public Sub AcquiredPositionsButton_Click(sender As Object, e As RibbonControlEventArgs) Handles AcquiredPositionsButton.Click
         Globals.Dashboard.Activate()
         Globals.Dashboard.AcquiredLO.DataSource = Nothing
         Application.DoEvents()
-        DownloadDataTableFromDB("Select * from PortfolioTeam30 order by symbol", "AcquiredPositionTbl")
-        Globals.Dashboard.AcquiredLO.DataSource = myDataSet.Tables("AcquiredPositionTbl")
+        DownloadDataTableFromDB("Select * from PortfolioTeam" + teamID + " order by symbol", "AcquiredPositionTbl")
         Globals.Dashboard.AcquiredLO.DataBodyRange.Interior.Color = System.Drawing.Color.Black
         Globals.Dashboard.AcquiredLO.ListColumns(1).Range.Font.Color = System.Drawing.Color.LightSkyBlue
-        Globals.Dashboard.AcquiredLO.ListColumns(2).Range.NumberFormat = "[White]#,##0;[Red]-#,##0;-"
-        Globals.Dashboard.AcquiredLO.ListColumns(3).Range.NumberFormat = "[Green]$ #,###;[Red]$ -#,##0;-"
+        Globals.Dashboard.AcquiredLO.ListColumns(2).Range.NumberFormat = "[White]#,##0;[Red]-#,##0;[White]-"
+        Globals.Dashboard.AcquiredLO.ListColumns(3).Range.NumberFormat = "[Green]$ #,###;[Red]$ -#,##0;[Green]-"
         Globals.Dashboard.AcquiredLO.Range.ColumnWidth = 12
         Globals.Dashboard.Range("G1").Select()
         CalcFinancialMetrics(currentDate)
         DisplayFinancialMetrics(currentDate)
     End Sub
 
-    Private Sub ConfirmationTicketButton_Click(sender As Object, e As RibbonControlEventArgs) Handles ConfirmationTicketButton.Click
+    Public Sub ConfirmationTicketButton_Click(sender As Object, e As RibbonControlEventArgs) Handles ConfirmationTicketButton.Click
         Globals.Transactions.Activate()
         Globals.Transactions.ConfirmationTicketsLO.DataSource = Nothing
         Application.DoEvents()
@@ -141,7 +140,7 @@ Public Class RibbonST
         Globals.Transactions.Range("A1").Select()
     End Sub
 
-    Private Sub TCostsBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles TCostsBtn.Click
+    Public Sub TCostsBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles TCostsBtn.Click
         Globals.Parameters.Activate()
         Globals.Parameters.TransactionCostsLO.DataSource = Nothing
         DownloadDataTableFromDB("Select * from TransactionCost", "TcostTbl")
@@ -151,7 +150,7 @@ Public Class RibbonST
         Globals.Parameters.Range("A1").Select()
     End Sub
 
-    Private Sub ParametersBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles ParametersBtn.Click
+    Public Sub ParametersBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles ParametersBtn.Click
         Globals.Parameters.Activate()
         Globals.Parameters.EnvVariablesLO.DataSource = Nothing
         DownloadDataTableFromDB("Select * from EnvironmentVariable", "EnvVarTbl")
@@ -161,7 +160,7 @@ Public Class RibbonST
         Globals.Parameters.Range("A1").Select()
     End Sub
 
-    Private Sub ResetPortfolioBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles ResetPortfolioBtn.Click
+    Public Sub ResetPortfolioBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles ResetPortfolioBtn.Click
         If MessageBox.Show("Are you sure, Dave? There is no undo...", "Reset AP?",
         MessageBoxButtons.YesNo, MessageBoxIcon.Hand) = DialogResult.Yes Then
 
@@ -172,19 +171,19 @@ Public Class RibbonST
         End If
     End Sub
 
-    Private Sub EditControlBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles EditControlBtn.Click
+    Public Sub EditControlBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles EditControlBtn.Click
         AcquiredPositionsButton_Click(Nothing, Nothing)
         For i = 1 To 5
             myDataSet.Tables("AcquiredPOsitionsTbl").Rows.Add()
         Next
     End Sub
 
-    Private Sub UploadPortfolioBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles UploadPortfolioBtn.Click
-        UploadScreenPortfolioToDB()
+    Public Sub UploadPortfolioBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles UploadPortfolioBtn.Click
+        UploadScreenPortfolioToDb()
         MainProgram()
     End Sub
 
-    Private Sub FinChartsBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles FinChartsBtn.Click
+    Public Sub FinChartsBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles FinChartsBtn.Click
         Globals.FinCharts.FillLBoxes()
         Globals.FinCharts.SetupFinCharts()
         Globals.FinCharts.Activate()
@@ -192,51 +191,60 @@ Public Class RibbonST
 
     End Sub
 
-    Private Sub ManualTBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles ManualTBtn.Click
+    Public Sub ManualTBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles ManualTBtn.Click
         ManualTBtn.Checked = True
         SyncTBtn.Checked = False
         SimulationTBtn.Checked = False
-        StepSimBtn.Checked = False
+        StepSimTBtn.Checked = False
         RoboTraderTBtn.Checked = False
         traderMode = "Manual"
         MainProgram()
     End Sub
 
-    Private Sub SyncTBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles SyncTBtn.Click
+    Public Sub SyncTBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles SyncTBtn.Click
         ManualTBtn.Checked = False
         SyncTBtn.Checked = True
         SimulationTBtn.Checked = False
-        StepSimBtn.Checked = False
+        StepSimTBtn.Checked = False
         RoboTraderTBtn.Checked = False
-        traderMode = "Sync"
-        MainProgram()
+        If traderMode = "RoboTrader" Then
+            traderMode = "Sync"
+        Else
+            traderMode = "Sync"
+            MainProgram()
+        End If
     End Sub
 
-    Private Sub RoboTraderTBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles RoboTraderTBtn.Click
+    Public Sub RoboTraderTBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles RoboTraderTBtn.Click
         ManualTBtn.Checked = False
         SyncTBtn.Checked = False
         SimulationTBtn.Checked = False
-        StepSimBtn.Checked = False
+        StepSimTBtn.Checked = False
         RoboTraderTBtn.Checked = True
-        traderMode = "RoboTrader"
-        MainProgram()
+        If traderMode = "Sync" Then
+            traderMode = "RoboTrader"
+
+        Else
+            traderMode = "RoboTrader"
+            MainProgram()
+        End If
     End Sub
 
-    Private Sub SimulationTBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles SimulationTBtn.Click
+    Public Sub SimulationTBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles SimulationTBtn.Click
         ManualTBtn.Checked = False
         SyncTBtn.Checked = False
         SimulationTBtn.Checked = True
-        StepSimBtn.Checked = False
+        StepSimTBtn.Checked = False
         RoboTraderTBtn.Checked = False
         traderMode = "Simulation"
         MainProgram()
     End Sub
 
-    Private Sub StepSimBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles StepSimBtn.Click
+    Public Sub StepSimBtn_Click(sender As Object, e As RibbonControlEventArgs) Handles StepSimTBtn.Click
         ManualTBtn.Checked = False
         SyncTBtn.Checked = False
         SimulationTBtn.Checked = False
-        StepSimBtn.Checked = True
+        StepSimTBtn.Checked = True
         RoboTraderTBtn.Checked = False
         traderMode = "StepSim"
         MainProgram()
