@@ -34,4 +34,5 @@
     Public secondsLeft As Integer
     Public tempNewDate As Date
     Public waitingForData As Boolean
+
 End Module

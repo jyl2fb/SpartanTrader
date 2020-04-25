@@ -264,13 +264,13 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>false</SignManifests>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>SpartanTrader1_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>SpartanTrader10_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>1FF6034AFB06FDA89DFA7E14DA5541BA885A1BDA</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>E6E2DE371EBD83F5E915D0D304E7DFE28A24749F</ManifestCertificateThumbprint>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="$(VSToolsPath)\OfficeTools\Microsoft.VisualStudio.Tools.Office.targets" Condition="'$(VSToolsPath)' != ''" />

@@ -237,4 +237,5 @@ Public Class Dashboard
         Next
         Return tempMin
     End Function
+
 End Class

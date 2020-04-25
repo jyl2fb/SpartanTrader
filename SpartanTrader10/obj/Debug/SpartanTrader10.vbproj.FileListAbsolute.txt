@@ -32,3 +32,13 @@ C:\Users\Joeyzect\Source\Repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\Sp
 C:\Users\Joeyzect\Source\Repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader1.dll
 C:\Users\Joeyzect\Source\Repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader1.xml
 C:\Users\Joeyzect\Source\Repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader1.pdb
+C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\bin\Debug\SpartanTrader1.dll
+C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\bin\Debug\SpartanTrader1.pdb
+C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\bin\Debug\SpartanTrader1.xml
+C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\bin\Debug\SpartanTrader1.dll.manifest
+C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\bin\Debug\SpartanTrader1.vsto
+C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\bin\Debug\SpartanTrader10.xlsx
+C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\bin\Debug\Microsoft.Office.Tools.Common.v4.0.Utilities.dll
+C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\bin\Debug\Microsoft.Office.Tools.Excel.v4.0.Utilities.dll
+C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader10.vbproj.CoreCompileInputs.cache
+C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader10.vbproj.CopyComplete
