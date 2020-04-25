@@ -126,6 +126,7 @@
     <Compile Include="Controls.vb" />
     <Compile Include="DataSetProcedures.vb" />
     <Compile Include="DBProcedures.vb" />
+    <Compile Include="DeltaGammaHedger.vb" />
     <Compile Include="GlobalVariables.vb" />
     <Compile Include="Main.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />

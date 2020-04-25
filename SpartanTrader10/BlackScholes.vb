@@ -105,4 +105,37 @@
             Return (Globals.ThisWorkbook.Application.WorksheetFunction.Norm_S_Dist(d1, True) - 1)
         End If
     End Function
+
+    Public Function CalcGamma(symbol As String, targetdate As Date) As Double
+        Dim sigma, K, S, t, d1 As Double
+        Dim ts As TimeSpan
+        Dim r As Double = riskFreeRate
+        Dim underlier As String
+
+        If symbol = "CAccount" Then
+            Return 0
+        End If
+
+        If IsAStock(symbol) Then
+            Return 0
+        End If
+
+        If targetdate >= GetExpiration(symbol).Date Then
+            Return 0
+        End If
+
+        If GetAsk(symbol, currentDate) = 0 Then
+            Return 0
+        End If
+
+        underlier = GetUnderlier(symbol)
+        sigma = GetVol(underlier)
+        K = GetStrike(symbol)
+        S = CalcMTM(underlier, targetdate)
+        ts = GetExpiration(symbol).Date - targetdate.Date
+        t = ts.Days / 365.25
+        d1 = (Math.Log(S / K) + (r + sigma * sigma / 2) * t) / (sigma * Math.Sqrt(t))
+        Return Globals.ThisWorkbook.Application.WorksheetFunction.NormDist(d1, 0, 1, False) / (S * sigma * Math.Sqrt(t)) 'TODO add dividend
+    End Function
+
 End Module
