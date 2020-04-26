@@ -42,3 +42,8 @@ C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\bin\Debug\Mi
 C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\bin\Debug\Microsoft.Office.Tools.Excel.v4.0.Utilities.dll
 C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader10.vbproj.CoreCompileInputs.cache
 C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader10.vbproj.CopyComplete
+C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\bin\Debug\LibOptimization.dll
+C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\bin\Debug\Microsoft.Solver.Foundation.dll
+C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\bin\Debug\LibOptimization.xml
+C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\bin\Debug\Microsoft.Solver.Foundation.xml
+C:\Users\Joeyzect\source\repos\jyl2fb\SpartanTrader\SpartanTrader10\obj\Debug\SpartanTrader10.vbproj.ResolveComReference.cache

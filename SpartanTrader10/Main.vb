@@ -23,6 +23,7 @@
             ResetAllRecommendations()
             Select Case traderMode
                 Case "Manual"
+                    ResetToBeginningOfTournament()
                     StopTimers()
                     RunDailyRoutine(currentDate)
                 Case "Simulation", "StepSim"

@@ -28,6 +28,7 @@
 
     Public Recommendations(12) As Transaction
     Public CandidateRecList As List(Of Transaction)
+    Public IntermediaryRecList As List(Of Transaction)
 
     Public traderMode As String = ""
 

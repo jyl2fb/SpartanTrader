@@ -159,6 +159,7 @@ Public Class Dashboard
             Globals.Dashboard.Range("M4").Offset(i, 0).Value = Recommendations(i).symbol
             Globals.Dashboard.Range("N4").Offset(i, 0).Value = Recommendations(i).qty
             Globals.Dashboard.Range("O4").Offset(i, 0).Value = Recommendations(i).totValue
+            Globals.Dashboard.Range("Q4").Offset(i, 0).Value = Recommendations(i).familyGamma
         Next
 
     End Sub

@@ -27,11 +27,11 @@ Partial Public NotInheritable Class Dashboard
     
     Friend WithEvents TeamIDCell As Microsoft.Office.Tools.Excel.NamedRange
     
-    Friend WithEvents TELO As Microsoft.Office.Tools.Excel.ListObject
-    
     Friend WithEvents TEChart As Microsoft.Office.Tools.Excel.Chart
     
     Friend WithEvents SecondsCell As Microsoft.Office.Tools.Excel.NamedRange
+    
+    Friend WithEvents TELO As Microsoft.Office.Tools.Excel.ListObject
     
     Friend WithEvents TickersCBox As Microsoft.Office.Tools.Excel.Controls.ComboBox
     
@@ -160,9 +160,9 @@ Partial Public NotInheritable Class Dashboard
         Me.AcquiredLO.BeginInit
         Me.InitialLO.BeginInit
         Me.TeamIDCell.BeginInit
-        Me.TELO.BeginInit
         Me.TEChart.BeginInit
         Me.SecondsCell.BeginInit
+        Me.TELO.BeginInit
     End Sub
     
     '''
@@ -170,9 +170,9 @@ Partial Public NotInheritable Class Dashboard
      Global.System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Tools.Office.ProgrammingModel.dll", "16.0.0.0"),  _
      Global.System.ComponentModel.EditorBrowsableAttribute(Global.System.ComponentModel.EditorBrowsableState.Never)>  _
     Private Sub EndInitialization()
+        Me.TELO.EndInit
         Me.SecondsCell.EndInit
         Me.TEChart.EndInit
-        Me.TELO.EndInit
         Me.TeamIDCell.EndInit
         Me.InitialLO.EndInit
         Me.AcquiredLO.EndInit
@@ -189,9 +189,9 @@ Partial Public NotInheritable Class Dashboard
         Me.AcquiredLO = Globals.Factory.CreateListObject(Nothing, Nothing, "Sheet2:AcquiredLO", "AcquiredLO", Me)
         Me.InitialLO = Globals.Factory.CreateListObject(Nothing, Nothing, "Sheet2:InitialLO", "InitialLO", Me)
         Me.TeamIDCell = Globals.Factory.CreateNamedRange(Nothing, Nothing, "TeamIDCell", "TeamIDCell", Me)
-        Me.TELO = Globals.Factory.CreateListObject(Nothing, Nothing, "Sheet2:TELO", "TELO", Me)
         Me.TEChart = Globals.Factory.CreateChart(Nothing, Nothing, "Sheet2:Chart 1", "TEChart", Me)
         Me.SecondsCell = Globals.Factory.CreateNamedRange(Nothing, Nothing, "SecondsCell", "SecondsCell", Me)
+        Me.TELO = Globals.Factory.CreateListObject(Nothing, Nothing, "Sheet2:TELO", "TELO", Me)
         Me.TickersCBox = New Microsoft.Office.Tools.Excel.Controls.ComboBox(Globals.Factory, Me.ItemProvider, Me.HostContext, "1B9CFAB0817D4614E371BA261C76ECA0C6DA41", "1B9CFAB0817D4614E371BA261C76ECA0C6DA41", Me, "TickersCBox")
         Me.StockQtyBox = New Microsoft.Office.Tools.Excel.Controls.TextBox(Globals.Factory, Me.ItemProvider, Me.HostContext, "22AE137DF231F5242212B9B62458710E26B702", "22AE137DF231F5242212B9B62458710E26B702", Me, "StockQtyBox")
         Me.BuyStockBtn = New Microsoft.Office.Tools.Excel.Controls.Button(Globals.Factory, Me.ItemProvider, Me.HostContext, "3A737A9013AE31342143AAC332FEB1D70166A3", "3A737A9013AE31342143AAC332FEB1D70166A3", Me, "BuyStockBtn")
@@ -345,11 +345,6 @@ Partial Public NotInheritable Class Dashboard
         '
         Me.TeamIDCell.DefaultDataSourceUpdateMode = System.Windows.Forms.DataSourceUpdateMode.Never
         '
-        'TELO
-        '
-        Me.TELO.AutoSetDataBoundColumnHeaders = true
-        Me.TELO.DefaultDataSourceUpdateMode = System.Windows.Forms.DataSourceUpdateMode.Never
-        '
         'TEChart
         '
         Me.TEChart.DefaultDataSourceUpdateMode = System.Windows.Forms.DataSourceUpdateMode.Never
@@ -357,6 +352,10 @@ Partial Public NotInheritable Class Dashboard
         'SecondsCell
         '
         Me.SecondsCell.DefaultDataSourceUpdateMode = System.Windows.Forms.DataSourceUpdateMode.Never
+        '
+        'TELO
+        '
+        Me.TELO.DefaultDataSourceUpdateMode = System.Windows.Forms.DataSourceUpdateMode.Never
         '
         'Dashboard
         '
@@ -389,9 +388,9 @@ Partial Public NotInheritable Class Dashboard
      Global.System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Tools.Office.ProgrammingModel.dll", "16.0.0.0"),  _
      Global.System.ComponentModel.EditorBrowsableAttribute(Global.System.ComponentModel.EditorBrowsableState.Never)>  _
     Protected Overrides Sub OnShutdown()
+        Me.TELO.Dispose
         Me.SecondsCell.Dispose
         Me.TEChart.Dispose
-        Me.TELO.Dispose
         Me.TeamIDCell.Dispose
         Me.InitialLO.Dispose
         Me.AcquiredLO.Dispose

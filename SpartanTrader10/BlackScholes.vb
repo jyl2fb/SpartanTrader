@@ -33,9 +33,9 @@
 
     Public Function CalcFamilyDelta(tkr As String, targetDate As Date) As Double
         Dim tempFamDelta As Double = 0
-        Dim delta As Double = 0
         Dim sym As String
         tkr = tkr.Trim()
+        Dim delta As Double = 0
         'AP
         For Each row As DataRow In myDataSet.Tables("AcquiredPositionsTbl").Rows
             sym = row("Symbol").ToString().Trim()
@@ -53,6 +53,31 @@
             End If
         Next
         Return tempFamDelta
+
+    End Function
+
+    Public Function CalcFamilyGamma(tkr As String, targetDate As Date) As Double
+        Dim tempFamGamma As Double = 0
+        Dim sym As String
+        Dim gamma As Double = 0
+        tkr = tkr.Trim()
+        'AP
+        For Each row As DataRow In myDataSet.Tables("AcquiredPositionsTbl").Rows
+            sym = row("Symbol").ToString().Trim()
+            If IsInTheFamily(sym, tkr) Then
+                gamma = CalcGamma(sym, targetDate)
+                tempFamGamma += gamma * row("Units")
+            End If
+        Next
+        'IP 
+        For Each row As DataRow In myDataSet.Tables("InitialPositionsTbl").Rows
+            sym = row("Symbol").ToString().Trim
+            If IsInTheFamily(sym, tkr) Then
+                gamma = CalcGamma(sym, targetDate)
+                tempFamGamma += gamma * row("units")
+            End If
+        Next
+        Return tempFamGamma
 
     End Function
 
@@ -111,21 +136,22 @@
         Dim ts As TimeSpan
         Dim r As Double = riskFreeRate
         Dim underlier As String
+        Dim answer As Double
 
         If symbol = "CAccount" Then
-            Return 0
+            Return 2
         End If
 
         If IsAStock(symbol) Then
-            Return 0
+            Return 3
         End If
 
         If targetdate >= GetExpiration(symbol).Date Then
-            Return 0
+            Return 4
         End If
 
         If GetAsk(symbol, currentDate) = 0 Then
-            Return 0
+            Return 5
         End If
 
         underlier = GetUnderlier(symbol)
@@ -135,7 +161,9 @@
         ts = GetExpiration(symbol).Date - targetdate.Date
         t = ts.Days / 365.25
         d1 = (Math.Log(S / K) + (r + sigma * sigma / 2) * t) / (sigma * Math.Sqrt(t))
-        Return Globals.ThisWorkbook.Application.WorksheetFunction.NormDist(d1, 0, 1, False) / (S * sigma * Math.Sqrt(t)) 'TODO add dividend
+
+        answer = (Globals.ThisWorkbook.Application.WorksheetFunction.NormDist(d1, 0, 1, False)) / (S * sigma * Math.Sqrt(t)) 'TODO add dividend
+        Return answer
     End Function
 
 End Module

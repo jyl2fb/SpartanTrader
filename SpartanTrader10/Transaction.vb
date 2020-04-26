@@ -32,6 +32,7 @@
 
     Public gamma As Double
     Public familyGamma As Double
+    Public weight As Double
 
     Public Sub Show()
         Globals.Dashboard.Range("C04").Value = type
@@ -46,16 +47,16 @@
         Globals.Dashboard.Range("C12").Value = price
         Globals.Dashboard.Range("C13").Value = tcost
         Globals.Dashboard.Range("C14").Value = totValue
-
+        Globals.Dashboard.Range("C15").Value = familyGamma
         Globals.Dashboard.Range("C16").Value = CAccountAT
         Globals.Dashboard.Range("C17").Value = interestSLT
         Globals.Dashboard.Range("C18").Value = marginAT
     End Sub
 
     Public Sub Clear()
-        type = "-      "
+        type = "-"
         qty = 0
-        symbol = "-      "
+        symbol = "-"
         strike = 0
         delta = 0
         gamma = 0

@@ -8,7 +8,6 @@
             Globals.Dashboard.Range("I4").Offset(i, 0).Value = ticker
             Globals.Dashboard.Range("J4").Offset(i, 0).Value = ticker
         Next
-
         CandidateRecList = New List(Of Transaction)
     End Sub
 
@@ -22,6 +21,7 @@
         Dim famtkr As String
         famtkr = Recommendations(i).familyTicker
         Recommendations(i).familyDelta = CalcFamilyDelta(famtkr, targetDate)
+        Recommendations(i).familyGamma = CalcFamilyGamma(famtkr, targetDate)
         Recommendations(i).type = "Hold"
         Recommendations(i).symbol = ""
         Recommendations(i).qty = 0
@@ -29,7 +29,14 @@
 
         If HedgingToday(targetDate) = True Then
             If NeedToHedge(Recommendations(i), targetDate) = True Then
+                IntermediaryRecList = New List(Of Transaction)
                 CandidateRecList.Clear()
+                'clear potentialist
+                GetPotentialList(famtkr, targetDate)
+                'Potential Functions
+                'FillPotential(IntermediaryRecList, targetDate)
+                SolvePotential(IntermediaryRecList, targetDate, Recommendations(i).familyDelta, Recommendations(i).familyGamma)
+                'GetWeights()
                 CalcCandidateRecScores(Recommendations(i), targetDate)
                 FindBestCandidateRec(Recommendations(i), targetDate)
                 Application.DoEvents()
