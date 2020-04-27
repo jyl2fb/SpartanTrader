@@ -31,19 +31,11 @@
         End Select
     End Function
 
-    Public Function CalcFamilyDelta(tkr As String, targetDate As Date) As Double
+    Public Function CalcFamilyDelta(tkr As String, targetDate As Date, initialOnly As Boolean) As Double
         Dim tempFamDelta As Double = 0
         Dim sym As String
         tkr = tkr.Trim()
         Dim delta As Double = 0
-        'AP
-        For Each row As DataRow In myDataSet.Tables("AcquiredPositionsTbl").Rows
-            sym = row("Symbol").ToString().Trim()
-            If IsInTheFamily(sym, tkr) Then
-                delta = CalcDelta(sym, targetDate)
-                tempFamDelta += delta * row("Units")
-            End If
-        Next
         'IP 
         For Each row As DataRow In myDataSet.Tables("InitialPositionsTbl").Rows
             sym = row("Symbol").ToString().Trim
@@ -52,29 +44,44 @@
                 tempFamDelta += delta * row("units")
             End If
         Next
-        Return tempFamDelta
-
-    End Function
-
-    Public Function CalcFamilyGamma(tkr As String, targetDate As Date) As Double
-        Dim tempFamGamma As Double = 0
-        Dim sym As String
-        Dim gamma As Double = 0
-        tkr = tkr.Trim()
+        If initialOnly Then
+            Return tempFamDelta
+        End If
         'AP
         For Each row As DataRow In myDataSet.Tables("AcquiredPositionsTbl").Rows
             sym = row("Symbol").ToString().Trim()
             If IsInTheFamily(sym, tkr) Then
-                gamma = CalcGamma(sym, targetDate)
-                tempFamGamma += gamma * row("Units")
+                delta = CalcDelta(sym, targetDate)
+                tempFamDelta += delta * row("Units")
             End If
         Next
+
+        Return tempFamDelta
+
+    End Function
+
+    Public Function CalcFamilyGamma(tkr As String, targetDate As Date, initialOnly As Boolean) As Double
+        Dim tempFamGamma As Double = 0
+        Dim sym As String
+        Dim gamma As Double = 0
+        tkr = tkr.Trim()
         'IP 
         For Each row As DataRow In myDataSet.Tables("InitialPositionsTbl").Rows
             sym = row("Symbol").ToString().Trim
             If IsInTheFamily(sym, tkr) Then
                 gamma = CalcGamma(sym, targetDate)
                 tempFamGamma += gamma * row("units")
+            End If
+        Next
+        If initialOnly Then
+            Return tempFamGamma
+        End If
+
+        For Each row As DataRow In myDataSet.Tables("AcquiredPositionsTbl").Rows
+            sym = row("Symbol").ToString().Trim()
+            If IsInTheFamily(sym, tkr) Then
+                gamma = CalcGamma(sym, targetDate)
+                tempFamGamma += gamma * row("Units")
             End If
         Next
         Return tempFamGamma
@@ -139,19 +146,19 @@
         Dim answer As Double
 
         If symbol = "CAccount" Then
-            Return 2
+            Return 0
         End If
 
         If IsAStock(symbol) Then
-            Return 3
+            Return 0
         End If
 
         If targetdate >= GetExpiration(symbol).Date Then
-            Return 4
+            Return 0
         End If
 
         If GetAsk(symbol, currentDate) = 0 Then
-            Return 5
+            Return 0
         End If
 
         underlier = GetUnderlier(symbol)

@@ -5,33 +5,65 @@ Module DeltaGammaHedger
 
     Public Sub GetPotentialList(famtkr As String, targetdate As Date)
         Dim mylist As New List(Of String)
+        Dim var As Transaction
         IntermediaryRecList.Clear()
-        For Each myRow As DataRow In myDataSet.Tables("TickersTbl").Rows
-            If CheckAvailability(myRow("Ticker"), targetdate) Then
-                If myRow("Ticker").ToString.Trim() = famtkr Then
-                    'mylist.Add(myRow("Ticker").ToString.Trim())
-                    Dim tempTransaction As New Transaction
-                    tempTransaction.symbol = famtkr
-                    tempTransaction.familyTicker = famtkr
-                    tempTransaction.delta = 1
-                    tempTransaction.gamma = 0
-                    tempTransaction.mtm = CalcMTM(famtkr, currentDate)
-                    IntermediaryRecList.Add(tempTransaction)
-                End If
+
+        For Each element In MasterRecList
+            If element.familyTicker = famtkr Then
+                var = element
+                var.delta = CalcDelta(var.symbol, targetdate)
+                var.gamma = CalcGamma(var.symbol, targetdate)
+                var.mtm = CalcMTM(var.symbol, targetdate)
+                IntermediaryRecList.Add(var)
             End If
         Next
+        'For Each myRow As DataRow In myDataSet.Tables("TickersTbl").Rows
+        '    If CheckAvailability(myRow("Ticker"), targetdate) Then
+        '        If myRow("Ticker").ToString.Trim() = famtkr Then
+        '            'mylist.Add(myRow("Ticker").ToString.Trim())
+        '            Dim tempTransaction As New Transaction
+        '            tempTransaction.symbol = famtkr
+        '            tempTransaction.familyTicker = famtkr
+        '            tempTransaction.delta = 1
+        '            tempTransaction.gamma = 0
+        '            tempTransaction.mtm = CalcMTM(famtkr, currentDate)
+        '            IntermediaryRecList.Add(tempTransaction)
+        '        End If
+        '    End If
+        'Next
+        'For Each myRow As DataRow In myDataSet.Tables("SymbolsTbl").Rows
+        '    If CheckAvailability(myRow("Symbol"), targetdate) Then
+        '        If IsInTheFamily(myRow("Symbol").ToString.Trim(), famtkr) Then
+        '            'mylist.Add(myRow("Symbol").ToString.Trim())
+        '            Dim tempTransaction As New Transaction
+        '            tempTransaction.symbol = myRow("Symbol").ToString.Trim()
+        '            tempTransaction.familyTicker = famtkr
+        '            tempTransaction.delta = CalcDelta(myRow("Symbol").ToString.Trim(), targetdate)
+        '            tempTransaction.gamma = CalcGamma(myRow("Symbol").ToString.Trim(), targetdate)
+        '            tempTransaction.mtm = CalcMTM(myRow("Symbol").ToString.Trim(), targetdate)
+        '            IntermediaryRecList.Add(tempTransaction)
+        '        End If
+        '    End If
+        'Next
+    End Sub
+    Public Sub FillMasterList()
+        For Each myRow As DataRow In myDataSet.Tables("TickersTbl").Rows
+            If IsInIP(myRow("Ticker")) = False Then
+                Dim tempTransaction As New Transaction
+                tempTransaction.symbol = myRow("Ticker").ToString.Trim()
+                tempTransaction.familyTicker = myRow("Ticker").ToString.Trim()
+                tempTransaction.type = "Hold"
+                MasterRecList.Add(tempTransaction)
+            End If
+        Next
+
         For Each myRow As DataRow In myDataSet.Tables("SymbolsTbl").Rows
-            If CheckAvailability(myRow("Symbol"), targetdate) Then
-                If IsInTheFamily(myRow("Symbol").ToString.Trim(), famtkr) Then
-                    'mylist.Add(myRow("Symbol").ToString.Trim())
-                    Dim tempTransaction As New Transaction
-                    tempTransaction.symbol = myRow("Symbol").ToString.Trim()
-                    tempTransaction.familyTicker = famtkr
-                    tempTransaction.delta = CalcDelta(myRow("Symbol").ToString.Trim(), targetdate)
-                    tempTransaction.gamma = CalcGamma(myRow("Symbol").ToString.Trim(), targetdate)
-                    tempTransaction.mtm = CalcMTM(myRow("Symbol").ToString.Trim(), targetdate)
-                    IntermediaryRecList.Add(tempTransaction)
-                End If
+            If IsInIP(myRow("Symbol")) = False Then
+                Dim tempTransaction2 As New Transaction
+                tempTransaction2.symbol = myRow("Symbol").ToString.Trim()
+                tempTransaction2.familyTicker = myRow("Underlier").ToString.Trim()
+                tempTransaction2.type = "Hold"
+                MasterRecList.Add(tempTransaction2)
             End If
         Next
     End Sub
@@ -53,6 +85,10 @@ Module DeltaGammaHedger
             Return False
         End If
 
+        If IsInIP(symbol) Then
+            Return False
+        End If
+
         Return True
     End Function
 
@@ -67,6 +103,10 @@ Module DeltaGammaHedger
             Globals.Dashboard.Range("AM4").Offset(i, 4).Value = zerofiller
             Globals.Dashboard.Range("AM4").Offset(i, 5).Value = zerofiller
         Next
+    End Sub
+
+    Public Sub ShortenMyList()
+        IntermediaryRecList = IntermediaryRecList.Where(Function(it) it.weight <> 0).ToList()
     End Sub
 
     Public Sub SolvePotential(potentialList As List(Of Transaction), targetDate As Date, famdelta As Double, famgamma As Double)
@@ -84,13 +124,6 @@ Module DeltaGammaHedger
             Dim tempDecision = New Decision(Domain.Real, tempname)
             decisions = decisions.Append(tempDecision)
         Next
-        'For i = 0 To potentialList.Count() - 1
-        'tempname = "T" + i
-        'Tvariable(i) = tempname
-        'decisionx = New Decision(Domain.Real, tempname)
-        'Next
-        'Dim decisions2 = Tvariable.[Select](Function(it) New Decision(Domain.Real, it.ToString))
-        'decisions = decisions1.Concat(decisions2)
         model.AddDecisions(decisions.ToArray())
 
         Dim objective = New SumTermBuilder(potentialList.Count())
@@ -129,46 +162,46 @@ Module DeltaGammaHedger
         Next
 
         Dim solution = solver.Solve()
-        System.Diagnostics.Debug.WriteLine(solution.GetReport())
-
         If (solution.Quality = SolverQuality.Optimal) Then
             For Each potentee In potentialList
                 Dim decision = model.Decisions.First(Function(it) it.Name = potentee.symbol)
                 potentee.weight = decision.ToDouble()
+                potentee.familyDelta = famdelta
+                potentee.familyGamma = famgamma
             Next
         End If
 
+    End Sub
 
-        'Dim solver As New model
-        'Dim tempDic = CreateObject("Scripting.Dictionary")
-        'Dim tempDic2 = CreateObject("Scripting.Dictionary")
-        'Dim delta, gamma, tvariable As Double
-        'Dim currentWeightstr, CurrentTstr As String
-
-        'solver.AddRow("delta", delta)
-        'solver.AddRow("gamma", gamma)
-        'solver.AddRow("tvariable", tvariable)
-
-        'For i = 0 To potentialList.Count - 1
-
-        '    currentWeightstr = "Weight" + i
-        '    CurrentTstr = "Dummy" + i
-
-
-        '    solver.AddVariable(currentWeightstr, tempDic(i))
-        '    'solver.AddVariable(CurrentTstr, CurrentT)
-        '    'solver.SetBounds(CurrentT, CalcMTM(potentialList(i), targetDate) *
-        '    solver.SetCoefficient(delta, tempDic(i), CalcDelta(potentialList(i).ToString, targetDate))
-        '    solver.SetCoefficient(gamma, tempDic(i), CalcGamma(potentialList(i).ToString, targetDate))
-
-
-        'Next
-
-
-        'solver.SetBounds(delta, -1 * famdelta, -1 * famdelta)
-        'solver.SetBounds(gamma, -1 * famgamma, -1 * famgamma)
-        'solver.AddGoal(tvariable, 1, True)
-
-        'clsBenchSphere
+    Public Sub GetSolvedTransaction(targetdate As Date)
+        For Each transaction In IntermediaryRecList
+            Dim appos = GetCurrentPositionInAP(transaction.symbol)
+            If transaction.weight = appos Then
+                transaction.type = "Hold"
+                transaction.qty = 0
+            ElseIf transaction.weight > appos Then ' we buy
+                transaction.type = "Buy"
+                If transaction.weight > 0 And appos < 0 Then
+                    transaction.qty = Math.Abs(appos)
+                Else
+                    transaction.qty = Math.Abs(transaction.weight - appos)
+                End If
+            ElseIf transaction.weight < appos Then
+                If transaction.weight > 0 And appos > 0 Then
+                    transaction.type = "Sell"
+                    transaction.qty = Math.Abs(appos - transaction.weight)
+                ElseIf transaction.weight < 0 And appos > 0 Then
+                    transaction.type = "Sell"
+                    transaction.qty = Math.Abs(appos)
+                Else
+                    transaction.type = "SellShort"
+                    transaction.qty = Math.Abs(appos - transaction.weight)
+                End If
+            End If
+            If transaction.qty <> 0 Then
+                transaction.CalcTransactionProperties(targetdate)
+                FinalRecList.Add(transaction)
+            End If
+        Next
     End Sub
 End Module

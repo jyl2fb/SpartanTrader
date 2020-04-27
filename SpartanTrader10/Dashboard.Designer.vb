@@ -322,10 +322,10 @@ Partial Public NotInheritable Class Dashboard
         'ManualExecutionLBox
         '
         Me.ManualExecutionLBox.BackColor = System.Drawing.Color.Black
-        Me.ManualExecutionLBox.Font = New System.Drawing.Font("Arial", 11!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
+        Me.ManualExecutionLBox.Font = New System.Drawing.Font("Arial", 14!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
         Me.ManualExecutionLBox.ForeColor = System.Drawing.Color.FromArgb(CType(CType(255,Byte),Integer), CType(CType(128,Byte),Integer), CType(CType(0,Byte),Integer))
-        Me.ManualExecutionLBox.ItemHeight = 17
-        Me.ManualExecutionLBox.Items.AddRange(New Object() {"Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade"})
+        Me.ManualExecutionLBox.ItemHeight = 22
+        Me.ManualExecutionLBox.Items.AddRange(New Object() {"Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade", "Trade"})
         Me.ManualExecutionLBox.Name = "ManualExecutionLBox"
         '
         'DateLine
@@ -355,6 +355,7 @@ Partial Public NotInheritable Class Dashboard
         '
         'TELO
         '
+        Me.TELO.AutoSetDataBoundColumnHeaders = true
         Me.TELO.DefaultDataSourceUpdateMode = System.Windows.Forms.DataSourceUpdateMode.Never
         '
         'Dashboard

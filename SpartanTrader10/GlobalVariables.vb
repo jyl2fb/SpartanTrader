@@ -26,9 +26,10 @@
     Public sumTE As Double = 0
     Public lastTEUpDate As Date = "1/1/1"
 
-    Public Recommendations(12) As Transaction
-    Public CandidateRecList As List(Of Transaction)
+    Public RecommendationFamily(11) As String
+    Public MasterRecList As List(Of Transaction)
     Public IntermediaryRecList As List(Of Transaction)
+    Public FinalRecList As List(Of Transaction)
 
     Public traderMode As String = ""
 
