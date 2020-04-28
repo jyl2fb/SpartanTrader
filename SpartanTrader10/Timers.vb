@@ -16,7 +16,7 @@
         End If
     End Sub
 
-    Private Sub secondsTimer_Tick() Handles SecondsTimer.Tick
+    Private Sub SecondsTimer_Tick() Handles SecondsTimer.Tick
         Try
             secondsLeft = secondsLeft - 1
             If secondsLeft < 0 Then
@@ -49,7 +49,7 @@
         End If
     End Sub
 
-    Private Sub spyTimer_Tick() Handles SpyTimer.Tick
+    Private Sub SpyTimer_Tick() Handles SpyTimer.Tick
         Try
             tempNewDate = DownloadCurrentDate()
 

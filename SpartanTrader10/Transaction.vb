@@ -30,6 +30,10 @@
     Public score As Double
     Public hedgeQty As Double
 
+    Public gamma As Double
+    Public familyGamma As Double
+    Public weight As Double
+
     Public Sub Show()
         Globals.Dashboard.Range("C04").Value = type
         Globals.Dashboard.Range("C05").Value = qty
@@ -38,22 +42,24 @@
         Globals.Dashboard.Range("C8").Value = strike
         Globals.Dashboard.Range("C9").Value = delta
         Globals.Dashboard.Range("C10").Value = dividend
+        Globals.Dashboard.Range("C11").Value = gamma
 
         Globals.Dashboard.Range("C12").Value = price
         Globals.Dashboard.Range("C13").Value = tcost
         Globals.Dashboard.Range("C14").Value = totValue
-
+        Globals.Dashboard.Range("C15").Value = familyGamma
         Globals.Dashboard.Range("C16").Value = CAccountAT
         Globals.Dashboard.Range("C17").Value = interestSLT
         Globals.Dashboard.Range("C18").Value = marginAT
     End Sub
 
     Public Sub Clear()
-        type = "-      "
+        type = "-"
         qty = 0
-        symbol = "-      "
+        symbol = "-"
         strike = 0
         delta = 0
+        gamma = 0
         dividend = 0
         price = 0
         tcost = 0
@@ -93,6 +99,7 @@
         currentPositionInAP = GetCurrentPositionInAP(symbol)
         marginAT = margin + CalcEffectOfTransactionOnMargin(targetDate)
         delta = CalcDelta(symbol, targetDate)
+        gamma = CalcGamma(symbol, targetDate)
     End Sub
 
     Public Function CalcTransactionCost() As Double

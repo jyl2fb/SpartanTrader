@@ -136,8 +136,8 @@ Public Class Dashboard
         If selectedTrade < 0 Or selectedTrade > 11 Then
             Exit Sub
         End If
-        If IsValid(Recommendations(selectedTrade)) Then
-            Execute(Recommendations(selectedTrade))
+        If IsValid(FinalRecList(selectedTrade)) Then
+            Execute(FinalRecList(selectedTrade))
             CalcFinancialMetrics(currentDate)
             DisplayFinancialMetrics(currentDate)
             CalcAllRecommendations(currentDate)
@@ -146,19 +146,37 @@ Public Class Dashboard
     End Sub
 
     Public Sub DisplayAllRecommendations()
-        For i = 0 To 11
-            DisplayRecommendation(i)
-        Next
+        'For i = 0 To 11
+        '    DisplayRecommendation(i)
+        'Next
+        Globals.Dashboard.Range("I40", "P70").Clear()
+        DisplayFinalRecommendation()
         Globals.Dashboard.ManualExecutionLBox.ClearSelected()
     End Sub
 
     Public Sub DisplayRecommendation(i As Integer)
-        For i = 0 To 11
-            Globals.Dashboard.Range("K4").Offset(i, 0).Value = Recommendations(i).familyDelta
-            Globals.Dashboard.Range("L4").Offset(i, 0).Value = Recommendations(i).type
-            Globals.Dashboard.Range("M4").Offset(i, 0).Value = Recommendations(i).symbol
-            Globals.Dashboard.Range("N4").Offset(i, 0).Value = Recommendations(i).qty
-            Globals.Dashboard.Range("O4").Offset(i, 0).Value = Recommendations(i).totValue
+        'For i = 0 To 11
+        '    Globals.Dashboard.Range("K4").Offset(i, 0).Value = RecommendationFamily(i).familyDelta
+        '    Globals.Dashboard.Range("L4").Offset(i, 0).Value = RecommendationFamily(i).type
+        '    Globals.Dashboard.Range("M4").Offset(i, 0).Value = RecommendationFamily(i).symbol
+        '    Globals.Dashboard.Range("N4").Offset(i, 0).Value = RecommendationFamily(i).qty
+        '    Globals.Dashboard.Range("O4").Offset(i, 0).Value = RecommendationFamily(i).totValue
+        '    Globals.Dashboard.Range("Q4").Offset(i, 0).Value = RecommendationFamily(i).familyGamma
+        'Next
+
+    End Sub
+
+    Public Sub DisplayFinalRecommendation()
+        For i = 0 To FinalRecList.Count - 1
+            Globals.Dashboard.Range("I40").Offset(i, 0).Value = FinalRecList(i).familyTicker
+
+            Globals.Dashboard.Range("K40").Offset(i, 0).Value = FinalRecList(i).familyDelta
+            Globals.Dashboard.Range("L40").Offset(i, 0).Value = FinalRecList(i).type
+            Globals.Dashboard.Range("M40").Offset(i, 0).Value = FinalRecList(i).symbol
+            Globals.Dashboard.Range("N40").Offset(i, 0).Value = FinalRecList(i).qty
+            Globals.Dashboard.Range("O40").Offset(i, 0).Value = FinalRecList(i).totValue
+            Globals.Dashboard.Range("P40").Offset(i, 0).Value = FinalRecList(i).familyGamma
+
         Next
 
     End Sub

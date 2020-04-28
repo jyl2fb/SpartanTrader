@@ -1,37 +1,53 @@
 ﻿Module RecommenderAlgorithm
     Public Sub ResetAllRecommendations()
-        Dim ticker As String
-        For i = 0 To 11
-            ticker = myDataSet.Tables("TickersTbl").Rows(i)("Ticker")
-            Recommendations(i) = New Transaction
-            Recommendations(i).familyTicker = ticker.Trim()
-            Globals.Dashboard.Range("I4").Offset(i, 0).Value = ticker
-            Globals.Dashboard.Range("J4").Offset(i, 0).Value = ticker
-        Next
-
-        CandidateRecList = New List(Of Transaction)
+        'Dim ticker As String
+        'For i = 0 To 11
+        '    ticker = myDataSet.Tables("TickersTbl").Rows(i)("Ticker")
+        '    RecommendationFamily(i) = New Transaction
+        '    RecommendationFamily(i).familyTicker = ticker.Trim()
+        '    Globals.Dashboard.Range("I4").Offset(i, 0).Value = ticker
+        '    Globals.Dashboard.Range("J4").Offset(i, 0).Value = GetVol(ticker)
+        'Next
+        FinalRecList = New List(Of Transaction)
+        FinalRecList.Clear()
     End Sub
 
     Public Sub CalcAllRecommendations(targetDate As Date)
         For i = 0 To 11
             CalcRecommendation(i, targetDate)
         Next
+
+        If julyoptionssold = False Then
+            If targetDate.Month = 7 Then
+                SellJulyOptions(targetDate)
+            End If
+        End If
+
     End Sub
 
     Public Sub CalcRecommendation(i As Integer, targetDate As Date)
         Dim famtkr As String
-        famtkr = Recommendations(i).familyTicker
-        Recommendations(i).familyDelta = CalcFamilyDelta(famtkr, targetDate)
-        Recommendations(i).type = "Hold"
-        Recommendations(i).symbol = ""
-        Recommendations(i).qty = 0
-        Recommendations(i).totValue = 0
+        Dim famdelta, ipfamdelta, famgamma, ipfamgamma As Double
+        famtkr = RecommendationFamily(i).Trim()
+        famdelta = CalcFamilyDelta(famtkr, targetDate, False)
+        ipfamdelta = CalcFamilyDelta(famtkr, targetDate, True) + deltaAdjustment
+        famgamma = CalcFamilyGamma(famtkr, targetDate, False)
+        ipfamgamma = CalcFamilyGamma(famtkr, targetDate, True)
+
+        IntermediaryRecList = New List(Of Transaction)
+        IntermediaryRecList.Clear()
 
         If HedgingToday(targetDate) = True Then
-            If NeedToHedge(Recommendations(i), targetDate) = True Then
-                CandidateRecList.Clear()
-                CalcCandidateRecScores(Recommendations(i), targetDate)
-                FindBestCandidateRec(Recommendations(i), targetDate)
+            'intreclisthere?
+            If NeedToHedge(famdelta, famgamma, targetDate) = True Then
+                'clear potentialist
+                GetPotentialList(famtkr, targetDate)
+                'Potential Functions
+                'FillPotential(IntermediaryRecList, targetDate)
+                SolvePotential(IntermediaryRecList, targetDate, ipfamdelta, ipfamgamma)
+                GetSolvedTransaction(IntermediaryRecList)
+                'CalcCandidateRecScores(Recommendations(i), targetDate)
+                'FindBestCandidateRec(Recommendations(i), targetDate)
                 Application.DoEvents()
             End If
         End If
@@ -42,15 +58,31 @@
         If targetDate.DayOfWeek = DayOfWeek.Saturday Or targetDate.DayOfWeek = DayOfWeek.Sunday Then
             Return False
         End If
+        'If TPV - TaTPV > 0 Then
+        '    Return True
+        'End If
+
+        'If TPV - TaTPV < -25000 Then
+        '    Return True
+        'End If
+
         Return True
     End Function
 
-    Public Function NeedToHedge(recomm As Transaction, targetDate As Date) As Boolean
-        If Math.Abs(recomm.familyDelta) > 10000 Then
-            Return True
-        Else
+    Public Function NeedToHedge(famdelta As Double, famgamma As Double, targetDate As Date) As Boolean
+        Dim difference As Double = TPV - TaTPV
+        If difference > 0 Then
+            If Math.Abs(famdelta) > 1000 Or Math.Abs(famgamma) > 250 Then
+                Return True
+            End If
+            Return False
+        ElseIf difference < 5000 Then
+            If Math.Abs(famdelta) > 1000 Or Math.Abs(famgamma) > 250 Then
+                Return True
+            End If
             Return False
         End If
+        Return False
     End Function
 
     Public Sub CalcCandidateRecScores(rec As Transaction, targetDate As Date)
@@ -110,11 +142,11 @@
 
     Public Sub FindBestCandidateRec(rec As Transaction, targetDate As Date)
         Dim bestScoreSoFar As Double = -1000
-        If CandidateRecList.Count = 0 Then
+        If MasterRecList.Count = 0 Then
             Exit Sub
         End If
 
-        For Each cr As Transaction In CandidateRecList
+        For Each cr As Transaction In MasterRecList
             If cr.score > bestScoreSoFar Then
                 rec.type = cr.type
                 rec.qty = cr.qty

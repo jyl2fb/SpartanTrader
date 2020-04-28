@@ -28,7 +28,7 @@
                         cRec.qty = cRec.hedgeQty
                     End If
                     cRec.score = baseScore + adjustment
-                    CandidateRecList.Add(cRec)
+                    MasterRecList.Add(cRec)
                 End If
             End If
         End If
@@ -57,7 +57,7 @@
                                 cRec.qty = cRec.hedgeQty
                             End If
                             cRec.score = baseScore + adjustment
-                            CandidateRecList.Add(cRec)
+                            MasterRecList.Add(cRec)
                         End If
                     End If
                 End If
@@ -103,7 +103,7 @@
                                 adjustment = adjustment + 1
                         End Select
                         cRec.score = baseScore + adjustment
-                        CandidateRecList.Add(cRec)
+                        MasterRecList.Add(cRec)
                     End If
                 End If
             End If
@@ -145,7 +145,7 @@
                             End If
                             If cRec.qty > 0 Then
                                 cRec.score = baseScore + adjustment
-                                CandidateRecList.Add(cRec)
+                                MasterRecList.Add(cRec)
                             End If
                         End If
                     End If
@@ -194,7 +194,7 @@
                                 adjustment = adjustment + 3
                         End Select
                         cRec.score = baseScore + adjustment
-                        CandidateRecList.Add(cRec)
+                        MasterRecList.Add(cRec)
                     End If
                 End If
             End If
@@ -229,7 +229,7 @@
                 End If
                 If cRec.qty > 0 Then
                     cRec.score = baseScore + adjustment
-                    CandidateRecList.Add(cRec)
+                    MasterRecList.Add(cRec)
                 End If
             End If
         End If
@@ -258,7 +258,7 @@
                                 cRec.qty = cRec.hedgeQty
                             End If
                             cRec.score = baseScore + adjustment
-                            CandidateRecList.Add(cRec)
+                            MasterRecList.Add(cRec)
                         End If
                     End If
                 End If
@@ -304,7 +304,7 @@
                                 adjustment = adjustment + 1
                         End Select
                         cRec.score = baseScore + adjustment
-                        CandidateRecList.Add(cRec)
+                        MasterRecList.Add(cRec)
                     End If
                 End If
             End If
@@ -346,7 +346,7 @@
                             End If
                             If cRec.qty > 0 Then
                                 cRec.score = baseScore + adjustment
-                                CandidateRecList.Add(cRec)
+                                MasterRecList.Add(cRec)
                             End If
                         End If
                     End If
@@ -385,7 +385,7 @@
             End If
             If cRec.qty > 0 Then
                 cRec.score = baseScore + adjustment
-                CandidateRecList.Add(cRec)
+                MasterRecList.Add(cRec)
             End If
         End If
     End Sub
@@ -431,7 +431,7 @@
                                 adjustment = adjustment + 5
                         End Select
                         cRec.score = baseScore + adjustment
-                        CandidateRecList.Add(cRec)
+                        MasterRecList.Add(cRec)
                     End If
                 End If
             End If
@@ -467,7 +467,7 @@
             End If
             If cRec.qty > 0 Then
                 cRec.score = baseScore + adjustment
-                CandidateRecList.Add(cRec)
+                MasterRecList.Add(cRec)
             End If
         End If
     End Sub

@@ -153,23 +153,49 @@
     End Sub
 
     Public Sub RoboExecuteAll(tdate As Date)
-        For i = 0 To 11
-            Recommendations(i).MarkAsDone()
-            Globals.Dashboard.DisplayRecommendation(i)
-        Next
-        For i = 0 To 11
-            CalcRecommendation(i, tdate)
-            Globals.Dashboard.DisplayRecommendation(i)
+
+        Globals.ThisWorkbook.Application.ScreenUpdating = False
+        Dim sortlist = FinalRecList.OrderByDescending(Function(x) x.type).ToList()
+
+        'For i = 0 To 11
+        '    Recommendations(i).MarkAsDone()
+        '    Globals.Dashboard.DisplayRecommendation(i)
+        'Next
+        'For i = 0 To 11
+        '    CalcRecommendation(i, tdate)
+        '    Globals.Dashboard.DisplayRecommendation(i)
+        '    RoboExecuteRec(i, tdate)
+        '    Application.DoEvents()
+        'Next
+        'For i = 0 To 11
+        '    FinalRecList(i).MarkAsDone()
+        '    Globals.Dashboard.DisplayRecommendation(i)
+        'Next
+        'I want to short sell before anything else in case I need the margin.
+        'For i = 0 To FinalRecList.Count() - 1
+        '    If FinalRecList(i).type = "SellShort" Then
+        '        RoboExecuteRec(i, tdate)
+        '    End If
+        'Next
+
+        'For i = 0 To FinalRecList.Count() - 1
+        '    If FinalRecList(i).type <> "SellShort" Then
+        '        RoboExecuteRec(i, tdate)
+        '    End If
+        'Next
+
+        For i = 0 To sortlist.Count - 1
             RoboExecuteRec(i, tdate)
-            Application.DoEvents()
         Next
+
+        Globals.ThisWorkbook.Application.ScreenUpdating = True
     End Sub
 
     Public Sub RoboExecuteStepByStep(tdate As Date)
         For i = 0 To 11
             CalcRecommendation(i, tdate)
             Globals.Dashboard.DisplayRecommendation(i)
-            If MessageBox.Show(Recommendations(i).familyTicker + " is next.",
+            If MessageBox.Show(RecommendationFamily(i) + " is next.",
                                "Simulation Mode", MessageBoxButtons.OKCancel,
                                MessageBoxIcon.Stop) = DialogResult.OK Then
                 RoboExecuteRec(i, tdate)
@@ -186,12 +212,22 @@
     End Sub
 
     Public Sub RoboExecuteRec(i As Integer, tdate As Date)
-        If Recommendations(i).type <> "Hold" Then
-            If IsValid(Recommendations(i)) Then
-                Execute(Recommendations(i))
+        'If Recommendations(i).type <> "Hold" Then
+        '    If IsValid(Recommendations(i)) Then
+        '        Execute(Recommendations(i))
+        '        CalcFinancialMetrics(currentDate)
+        '        DisplayFinancialMetrics(currentDate)
+        '    End If
+        'End If
+
+        If FinalRecList(i).type <> "Hold" Then
+            If IsValid(FinalRecList(i)) Then
+                FinalRecList(i).CalcTransactionProperties(tdate)
+                Execute(FinalRecList(i))
                 CalcFinancialMetrics(currentDate)
-                DisplayFinancialMetrics(currentDate)
+                'DisplayFinancialMetrics(currentDate)
             End If
         End If
     End Sub
+
 End Module

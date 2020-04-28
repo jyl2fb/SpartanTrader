@@ -1,5 +1,5 @@
 ﻿Module Main
-
+    'testing my change
 
     Public Sub Initialization()
         Globals.ThisWorkbook.Application.DisplayFormulaBar = False
@@ -13,7 +13,6 @@
         lastPriceDownloadDate = "1/1/1"
         ConnectToActiveDB()
         Globals.Dashboard.SetupTEChart()
-        CreateCurrentTransaction()
         If IsThereData() = True Then
             currentDate = DownloadCurrentDate()
             DownloadStaticData()
@@ -21,8 +20,10 @@
             SetFinancialConstants()
             CreateCurrentTransaction()
             ResetAllRecommendations()
+            FillMasterList()
             Select Case traderMode
                 Case "Manual"
+                    ResetToBeginningOfTournament()
                     StopTimers()
                     RunDailyRoutine(currentDate)
                 Case "Simulation", "StepSim"
@@ -66,6 +67,10 @@
         riskFreeRate = GetRiskFreeRate()
         initialCAccount = GetInitialCAccount()
         TPVatStart = CalcTPVAtStart()
+        For Each myRow As DataRow In myDataSet.Tables("TickersTbl").Rows
+            RecommendationFamily(myDataSet.Tables("TickersTbl").Rows.IndexOf(myRow)) = myRow("Ticker")
+        Next
+        MasterRecList = New List(Of Transaction)
     End Sub
 
     Public Sub CalcFinancialMetrics(targetDate As Date)
@@ -78,7 +83,8 @@
         TPV = CalcTPV(targetDate)
         TE = CalcTE()
         TEpercent = TE / TaTPV
-        sumTE = sumTE + UpdateSumTE(targetDate)
+        sumTE += UpdateSumTE(targetDate)
+        deltaAdjustment = Math.Max(TaTPV - TPV, 0) / 12
 
     End Sub
 
@@ -119,43 +125,30 @@
         Globals.Dashboard.AcquiredLO.DataSource = myDataSet.Tables("AcquiredPositionsTbl")
         Globals.Dashboard.AcquiredLO.Range.Columns.AutoFit()
     End Sub
-    Public Sub DisplayAllRecommendations()
-        For i = 0 To 11
-            DisplayRecommendation(i)
-        Next
-        Globals.Dashboard.ManualExecutionLBox.ClearSelected()
-    End Sub
-
-    Public Sub DisplayRecommendation(i As Integer)
-        For i = 0 To 11
-            Globals.Dashboard.Range("K4").Offset(i, 0).Value = Recommendations(i).familyDelta
-            Globals.Dashboard.Range("L4").Offset(i, 0).Value = Recommendations(i).type
-            Globals.Dashboard.Range("M4").Offset(i, 0).Value = Recommendations(i).symbol
-            Globals.Dashboard.Range("N4").Offset(i, 0).Value = Recommendations(i).qty
-            Globals.Dashboard.Range("O4").Offset(i, 0).Value = Recommendations(i).totValue
-        Next
-
-    End Sub
 
     Public Sub RunDailyRoutine(tdate As Date)
         Globals.Dashboard.DateLine.Value = tdate.ToLongDateString()
         CalcFinancialMetrics(tdate)
         DisplayFinancialMetrics(tdate)
         Globals.Dashboard.UpdateTEChart(tdate)
+        ResetAllRecommendations()
         Select Case traderMode
             Case "Manual"
                 CalcAllRecommendations(currentDate)
                 Globals.Dashboard.DisplayAllRecommendations()
             Case "Simulation"
+                CalcAllRecommendations(currentDate)
                 RoboExecuteAll(tdate)
             Case "StepSim"
-                RoboExecuteStepByStep(tdate)
+                    RoboExecuteStepByStep(tdate)
             Case "Sync"
                 CalcAllRecommendations(currentDate)
                 Globals.Dashboard.DisplayAllRecommendations()
             Case "RoboTrader"
+                CalcAllRecommendations(currentDate)
                 RoboExecuteAll(tdate)
         End Select
+
     End Sub
 
     Public Sub ResetToBeginningOfTournament()
@@ -165,8 +158,8 @@
         UploadPosition("CAccount", initialCAccount)
         DownloadTeamData(currentDate)
         lastTransactionDate = GetStartDate()
-        CalcAllRecommendations(currentDate)
-        Globals.Dashboard.DisplayAllRecommendations()
+        'CalcAllRecommendations(currentDate)
+        'Globals.Dashboard.DisplayAllRecommendations()
     End Sub
 
     Public Sub WaitForData()

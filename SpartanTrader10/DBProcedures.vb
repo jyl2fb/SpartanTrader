@@ -82,7 +82,7 @@
         DownloadDataTableFromDB("Select * from InitialPosition order by symbol", "InitialPositionsTbl")
         DownloadDataTableFromDB("Select distinct ticker from StockMarket order by ticker", "TickersTbl")
         DownloadDataTableFromDB("Select * from EnvironmentVariable", "EnvironmentVariableTbl")
-        DownloadDataTableFromDB("Select distinct symbol from OptionMarket order by symbol", "SymbolsTbl")
+        DownloadDataTableFromDB("Select distinct symbol, underlier from OptionMarket order by symbol", "SymbolsTbl")
         DownloadDataTableFromDB("Select * from TransactionCost", "TransactionCostTbl")
     End Sub
 

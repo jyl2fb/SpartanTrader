@@ -26,13 +26,18 @@
     Public sumTE As Double = 0
     Public lastTEUpDate As Date = "1/1/1"
 
-    Public Recommendations(12) As Transaction
-    Public CandidateRecList As List(Of Transaction)
+    Public RecommendationFamily(11) As String
+    Public MasterRecList As List(Of Transaction)
+    Public IntermediaryRecList As List(Of Transaction)
+    Public FinalRecList As List(Of Transaction)
 
     Public traderMode As String = ""
 
     Public secondsLeft As Integer
     Public tempNewDate As Date
     Public waitingForData As Boolean
+
+    Public julyoptionssold As Boolean = False
+    Public deltaAdjustment As Double = -10000
 
 End Module
