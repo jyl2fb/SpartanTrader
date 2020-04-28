@@ -16,6 +16,13 @@
         For i = 0 To 11
             CalcRecommendation(i, targetDate)
         Next
+
+        If julyoptionssold = False Then
+            If targetDate.Month = 7 Then
+                SellJulyOptions(targetDate)
+            End If
+        End If
+
     End Sub
 
     Public Sub CalcRecommendation(i As Integer, targetDate As Date)
@@ -23,19 +30,22 @@
         Dim famdelta, ipfamdelta, famgamma, ipfamgamma As Double
         famtkr = RecommendationFamily(i).Trim()
         famdelta = CalcFamilyDelta(famtkr, targetDate, False)
-        ipfamdelta = CalcFamilyDelta(famtkr, targetDate, True)
+        ipfamdelta = CalcFamilyDelta(famtkr, targetDate, True) + deltaAdjustment
         famgamma = CalcFamilyGamma(famtkr, targetDate, False)
         ipfamgamma = CalcFamilyGamma(famtkr, targetDate, True)
 
+        IntermediaryRecList = New List(Of Transaction)
+        IntermediaryRecList.Clear()
+
         If HedgingToday(targetDate) = True Then
+            'intreclisthere?
             If NeedToHedge(famdelta, famgamma, targetDate) = True Then
-                IntermediaryRecList = New List(Of Transaction)
                 'clear potentialist
                 GetPotentialList(famtkr, targetDate)
                 'Potential Functions
                 'FillPotential(IntermediaryRecList, targetDate)
                 SolvePotential(IntermediaryRecList, targetDate, ipfamdelta, ipfamgamma)
-                GetSolvedTransaction(targetDate)
+                GetSolvedTransaction(IntermediaryRecList)
                 'CalcCandidateRecScores(Recommendations(i), targetDate)
                 'FindBestCandidateRec(Recommendations(i), targetDate)
                 Application.DoEvents()
@@ -48,12 +58,11 @@
         If targetDate.DayOfWeek = DayOfWeek.Saturday Or targetDate.DayOfWeek = DayOfWeek.Sunday Then
             Return False
         End If
-
-        'If TPV - TaTPV > 100000 Then
+        'If TPV - TaTPV > 0 Then
         '    Return True
         'End If
 
-        'If TPV - TaTPV < -50000 Then
+        'If TPV - TaTPV < -25000 Then
         '    Return True
         'End If
 
@@ -61,11 +70,19 @@
     End Function
 
     Public Function NeedToHedge(famdelta As Double, famgamma As Double, targetDate As Date) As Boolean
-        If Math.Abs(famdelta) > 100 Then
-            Return True
-        Else
+        Dim difference As Double = TPV - TaTPV
+        If difference > 0 Then
+            If Math.Abs(famdelta) > 1000 Or Math.Abs(famgamma) > 250 Then
+                Return True
+            End If
+            Return False
+        ElseIf difference < 5000 Then
+            If Math.Abs(famdelta) > 1000 Or Math.Abs(famgamma) > 250 Then
+                Return True
+            End If
             Return False
         End If
+        Return False
     End Function
 
     Public Sub CalcCandidateRecScores(rec As Transaction, targetDate As Date)

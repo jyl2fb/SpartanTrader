@@ -153,6 +153,10 @@
     End Sub
 
     Public Sub RoboExecuteAll(tdate As Date)
+
+        Globals.ThisWorkbook.Application.ScreenUpdating = False
+        Dim sortlist = FinalRecList.OrderByDescending(Function(x) x.type).ToList()
+
         'For i = 0 To 11
         '    Recommendations(i).MarkAsDone()
         '    Globals.Dashboard.DisplayRecommendation(i)
@@ -168,19 +172,23 @@
         '    Globals.Dashboard.DisplayRecommendation(i)
         'Next
         'I want to short sell before anything else in case I need the margin.
-        For i = 0 To FinalRecList.Count() - 1
-            If FinalRecList(i).type = "SellShort" Then
-                RoboExecuteRec(i, tdate)
-            End If
+        'For i = 0 To FinalRecList.Count() - 1
+        '    If FinalRecList(i).type = "SellShort" Then
+        '        RoboExecuteRec(i, tdate)
+        '    End If
+        'Next
+
+        'For i = 0 To FinalRecList.Count() - 1
+        '    If FinalRecList(i).type <> "SellShort" Then
+        '        RoboExecuteRec(i, tdate)
+        '    End If
+        'Next
+
+        For i = 0 To sortlist.Count - 1
+            RoboExecuteRec(i, tdate)
         Next
 
-        For i = 0 To FinalRecList.Count() - 1
-            If FinalRecList(i).type <> "SellShort" Then
-                RoboExecuteRec(i, tdate)
-            End If
-        Next
-
-
+        Globals.ThisWorkbook.Application.ScreenUpdating = True
     End Sub
 
     Public Sub RoboExecuteStepByStep(tdate As Date)
@@ -217,7 +225,7 @@
                 FinalRecList(i).CalcTransactionProperties(tdate)
                 Execute(FinalRecList(i))
                 CalcFinancialMetrics(currentDate)
-                DisplayFinancialMetrics(currentDate)
+                'DisplayFinancialMetrics(currentDate)
             End If
         End If
     End Sub

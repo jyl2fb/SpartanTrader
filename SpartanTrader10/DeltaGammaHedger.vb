@@ -4,17 +4,25 @@ Imports Microsoft.SolverFoundation.Services
 Module DeltaGammaHedger
 
     Public Sub GetPotentialList(famtkr As String, targetdate As Date)
-        Dim mylist As New List(Of String)
-        Dim var As Transaction
         IntermediaryRecList.Clear()
 
         For Each element In MasterRecList
-            If element.familyTicker = famtkr Then
-                var = element
-                var.delta = CalcDelta(var.symbol, targetdate)
-                var.gamma = CalcGamma(var.symbol, targetdate)
-                var.mtm = CalcMTM(var.symbol, targetdate)
-                IntermediaryRecList.Add(var)
+            If targetdate.Month >= 7 Then
+                If element.familyTicker = famtkr And ExpiresInJuly(element.symbol) = False Then
+                    Dim var = element
+                    var.delta = CalcDelta(var.symbol, targetdate)
+                    var.gamma = CalcGamma(var.symbol, targetdate)
+                    var.mtm = CalcMTM(var.symbol, targetdate)
+                    IntermediaryRecList.Add(var)
+                End If
+            Else
+                If element.familyTicker = famtkr Then
+                    Dim var = element
+                    var.delta = CalcDelta(var.symbol, targetdate)
+                    var.gamma = CalcGamma(var.symbol, targetdate)
+                    var.mtm = CalcMTM(var.symbol, targetdate)
+                    IntermediaryRecList.Add(var)
+                End If
             End If
         Next
         'For Each myRow As DataRow In myDataSet.Tables("TickersTbl").Rows
@@ -45,6 +53,27 @@ Module DeltaGammaHedger
         '        End If
         '    End If
         'Next
+    End Sub
+    Public Sub SellJulyOptions(targetdate As Date)
+        Dim symbol As String
+        Dim units As Double
+
+        Dim TempRecList As New List(Of Transaction)
+        TempRecList.Clear()
+
+        For Each myRow As DataRow In myDataSet.Tables("AcquiredPositionsTbl").Rows
+            Dim temptransaction As New Transaction
+            symbol = myRow("Symbol").ToString().Trim
+            units = myRow("Units")
+            If IsAnOption(symbol) And ExpiresInJuly(symbol) Then
+                temptransaction.symbol = symbol
+                temptransaction.weight = 0
+                temptransaction.type = "WTF"
+                TempRecList.Add(temptransaction)
+            End If
+        Next
+        GetSolvedTransaction(TempRecList)
+        julyoptionssold = True
     End Sub
     Public Sub FillMasterList()
         For Each myRow As DataRow In myDataSet.Tables("TickersTbl").Rows
@@ -77,7 +106,7 @@ Module DeltaGammaHedger
             Return True
         End If
 
-        If targetdate >= GetExpiration(symbol).Date Then
+        If targetdate.AddDays(14) >= GetExpiration(symbol).Date Then
             Return False
         End If
 
@@ -85,29 +114,8 @@ Module DeltaGammaHedger
             Return False
         End If
 
-        If IsInIP(symbol) Then
-            Return False
-        End If
-
         Return True
     End Function
-
-    Public Sub FillPotential(potentialList As List(Of String), targetDate As Date)
-        Dim zerofiller As Double = 0.0
-        Globals.Dashboard.Range("AM4", "AR35").Clear()
-        For i = 0 To (potentialList.Count - 1)
-            Globals.Dashboard.Range("AM4").Offset(i, 0).Value = potentialList(i).ToString().Trim()
-            Globals.Dashboard.Range("AM4").Offset(i, 1).Value = CalcDelta(potentialList(i).ToString, targetDate)
-            Globals.Dashboard.Range("AM4").Offset(i, 2).Value = CalcGamma(potentialList(i).ToString(), targetDate)
-            Globals.Dashboard.Range("AM4").Offset(i, 3).Value = CalcMTM(potentialList(i).ToString(), targetDate)
-            Globals.Dashboard.Range("AM4").Offset(i, 4).Value = zerofiller
-            Globals.Dashboard.Range("AM4").Offset(i, 5).Value = zerofiller
-        Next
-    End Sub
-
-    Public Sub ShortenMyList()
-        IntermediaryRecList = IntermediaryRecList.Where(Function(it) it.weight <> 0).ToList()
-    End Sub
 
     Public Sub SolvePotential(potentialList As List(Of Transaction), targetDate As Date, famdelta As Double, famgamma As Double)
 
@@ -173,8 +181,8 @@ Module DeltaGammaHedger
 
     End Sub
 
-    Public Sub GetSolvedTransaction(targetdate As Date)
-        For Each transaction In IntermediaryRecList
+    Public Sub GetSolvedTransaction(reclist As List(Of Transaction))
+        For Each transaction In reclist
             Dim appos = GetCurrentPositionInAP(transaction.symbol)
             If transaction.weight = appos Then
                 transaction.type = "Hold"
@@ -198,10 +206,19 @@ Module DeltaGammaHedger
                     transaction.qty = Math.Abs(appos - transaction.weight)
                 End If
             End If
+
             If transaction.qty <> 0 Then
-                transaction.CalcTransactionProperties(targetdate)
                 FinalRecList.Add(transaction)
             End If
         Next
     End Sub
+    Public Function ExpiresInJuly(symbol As String) As Boolean
+        If IsAStock(symbol) Or symbol = "CAccount" Then
+            Return False
+        End If
+        If GetExpiration(symbol).Month = 7 Then
+            Return True
+        End If
+        Return False
+    End Function
 End Module

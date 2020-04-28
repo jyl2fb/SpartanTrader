@@ -37,4 +37,7 @@
     Public tempNewDate As Date
     Public waitingForData As Boolean
 
+    Public julyoptionssold As Boolean = False
+    Public deltaAdjustment As Double = -10000
+
 End Module

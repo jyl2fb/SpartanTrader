@@ -83,7 +83,8 @@
         TPV = CalcTPV(targetDate)
         TE = CalcTE()
         TEpercent = TE / TaTPV
-        sumTE = sumTE + UpdateSumTE(targetDate)
+        sumTE += UpdateSumTE(targetDate)
+        deltaAdjustment = Math.Max(TaTPV - TPV, 0) / 12
 
     End Sub
 
@@ -144,6 +145,7 @@
                 CalcAllRecommendations(currentDate)
                 Globals.Dashboard.DisplayAllRecommendations()
             Case "RoboTrader"
+                CalcAllRecommendations(currentDate)
                 RoboExecuteAll(tdate)
         End Select
 
