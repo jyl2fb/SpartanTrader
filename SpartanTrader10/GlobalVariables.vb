@@ -39,5 +39,6 @@
 
     Public julyoptionssold As Boolean = False
     Public deltaAdjustment As Double = -10000
+    Public highenoughline As Boolean = False
 
 End Module

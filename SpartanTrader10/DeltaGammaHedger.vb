@@ -124,6 +124,7 @@ Module DeltaGammaHedger
     End Function
 
     Public Sub SolvePotential(potentialList As List(Of Transaction), targetDate As Date, famdelta As Double, famgamma As Double, famspeed As Double)
+
         Dim TrackingError = TPV - TaTPV
         Dim solver = SolverContext.GetContext()
         solver.ClearModel()
@@ -166,15 +167,15 @@ Module DeltaGammaHedger
         Dim gammaconstraint = gammacomponent.ToTerm() = -1 * famgamma
         model.AddConstraint("Gamma", gammaconstraint)
 
-        'If TrackingError >= 100000 Then ' CHANGE HERE
-        Dim speedcomponent = New SumTermBuilder(potentialList.Count())
+        If highenoughline Then ' CHANGE HERE
+            Dim speedcomponent = New SumTermBuilder(potentialList.Count())
             For Each potential In potentialList
                 Dim speedsum = model.Decisions.First(Function(it) it.Name = potential.symbol)
                 speedcomponent.Add(speedsum * potential.speed)
             Next
             Dim speedconstraint = speedcomponent.ToTerm() = -1 * famspeed
             model.AddConstraint("Speed", speedconstraint)
-        'End If
+        End If
 
         For var = 0 To potentialList.Count - 1
             Dim i = var
@@ -253,4 +254,6 @@ Module DeltaGammaHedger
         End If
         Return False
     End Function
+
+
 End Module
