@@ -73,8 +73,8 @@
 
     Public Function NeedToHedge(famdelta As Double, famgamma As Double, targetDate As Date) As Boolean
         Dim difference As Double = TPV - TaTPV
-        If difference > 100000 Then
-            If Math.Abs(famdelta) > 10 Or Math.Abs(famgamma) > 2.5 Then
+        If difference > 1000000 Then
+            If Math.Abs(famdelta) > 100 Or Math.Abs(famgamma) > 250 Then
                 Return True
             End If
         ElseIf difference >= 0 Then

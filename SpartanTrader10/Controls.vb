@@ -54,7 +54,7 @@
             Return False
         End If
 
-        If t.type = "ShortSell" And TooCloseToMaxMargins() Then
+        If t.type = "SellShort" And TooCloseToMaxMargins() Then
             Return False
         End If
         'TODO add the other controls

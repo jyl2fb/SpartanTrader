@@ -14,7 +14,9 @@ Module DeltaGammaHedger
                     var.gamma = CalcGamma(var.symbol, targetdate)
                     var.speed = CalcSpeed(var.symbol, targetdate)
                     var.mtm = CalcMTM(var.symbol, targetdate)
-                    IntermediaryRecList.Add(var)
+                    If var.mtm >= 0.02 Then
+                        IntermediaryRecList.Add(var)
+                    End If
                 End If
             Else
                 If element.familyTicker = famtkr Then
@@ -23,7 +25,9 @@ Module DeltaGammaHedger
                     var.gamma = CalcGamma(var.symbol, targetdate)
                     var.speed = CalcSpeed(var.symbol, targetdate)
                     var.mtm = CalcMTM(var.symbol, targetdate)
-                    IntermediaryRecList.Add(var)
+                    If var.mtm >= 0.02 Then
+                        IntermediaryRecList.Add(var)
+                    End If
                 End If
             End If
         Next
@@ -162,15 +166,15 @@ Module DeltaGammaHedger
         Dim gammaconstraint = gammacomponent.ToTerm() = -1 * famgamma
         model.AddConstraint("Gamma", gammaconstraint)
 
-        If TrackingError >= 250000 Then ' CHANGE HERE
-            Dim speedcomponent = New SumTermBuilder(potentialList.Count())
+        'If TrackingError >= 100000 Then ' CHANGE HERE
+        Dim speedcomponent = New SumTermBuilder(potentialList.Count())
             For Each potential In potentialList
                 Dim speedsum = model.Decisions.First(Function(it) it.Name = potential.symbol)
                 speedcomponent.Add(speedsum * potential.speed)
             Next
             Dim speedconstraint = speedcomponent.ToTerm() = -1 * famspeed
             model.AddConstraint("Speed", speedconstraint)
-        End If
+        'End If
 
         For var = 0 To potentialList.Count - 1
             Dim i = var
@@ -205,9 +209,11 @@ Module DeltaGammaHedger
     Public Sub GetSolvedTransaction(reclist As List(Of Transaction))
         For Each transaction In reclist
             Dim appos = GetCurrentPositionInAP(transaction.symbol)
-            transaction.weight = appos
-            transaction.type = "Hold"
-            transaction.qty = 0
+            If transaction.weight = appos Then
+                transaction.type = "Hold"
+                transaction.qty = 0
+            End If
+
             If transaction.weight > appos Then ' we buy
                 transaction.type = "Buy"
                 If transaction.weight >= 0 And appos <= 0 Then
@@ -219,7 +225,7 @@ Module DeltaGammaHedger
                 If transaction.weight >= 0 And appos >= 0 Then
                     transaction.type = "Sell"
                     transaction.qty = Math.Abs(appos - transaction.weight)
-                ElseIf transaction.weight <= 0 And appos >= 0 Then
+                ElseIf transaction.weight <= 0 And appos > 0 Then
                     transaction.type = "Sell"
                     transaction.qty = Math.Abs(appos)
                 Else
