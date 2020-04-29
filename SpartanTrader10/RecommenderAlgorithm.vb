@@ -173,6 +173,14 @@
         End If
     End Function
 
+    Public Function TooCloseToMaxMargins2() As Boolean
+        If ((maxMargin - Math.Abs(margin)) < 1500000) Then
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+
     Public Function MaxShortWithinConstraints(sym As String, tdate As Date) As Double
         Dim q As Double = 0
         Dim maxAllowableIncreaseInMargins As Double = 0

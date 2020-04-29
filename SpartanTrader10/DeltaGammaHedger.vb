@@ -183,11 +183,16 @@ Module DeltaGammaHedger
             Dim qconstraint = qvalue * potentialList(i).mtm <= tvalue
             Dim qconstraintneg = -1 * qvalue * potentialList(i).mtm <= tvalue
             Dim marginconstraint = qvalue >= Math.Min(0, GetCurrentPositionInAP(potentialList(i).symbol))
+            Dim marginconstraint2 = qvalue >= Math.Min(0, GetCurrentPositionInAP(potentialList(i).symbol)) * 0.9
             model.AddConstraint("TP" + i.ToString(), qconstraint)
             model.AddConstraint("TN" + i.ToString(), qconstraintneg)
 
             If TooCloseToMaxMargins() Then
                 model.AddConstraint("margin" + i.ToString(), marginconstraint)
+            End If
+
+            If TooCloseToMaxMargins2() Then
+                model.AddConstraint("margin2" + i.ToString(), marginconstraint2)
             End If
         Next
 

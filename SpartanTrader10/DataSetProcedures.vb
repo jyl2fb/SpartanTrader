@@ -31,7 +31,7 @@
                 Return Double.Parse(value)
             End If
         Next
-        MessageBox.Show("Holy BatMouse! Could not find 'InitialCAccount'. Returned 10,000,000.")
+        'MessageBox.Show("Holy BatMouse! Could not find 'InitialCAccount'. Returned 10,000,000.")
         Return 10000000
     End Function
 
