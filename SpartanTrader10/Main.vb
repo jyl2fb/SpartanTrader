@@ -4,7 +4,7 @@
     Public Sub Initialization()
         Globals.ThisWorkbook.Application.DisplayFormulaBar = False
         Globals.Dashboard.TeamIDCell.Value = "TeamID: " + teamID
-        Globals.Ribbons.RibbonST.AlphaTBtn_Click(Nothing, Nothing)
+        Globals.Ribbons.RibbonST.BetaTBtn_Click(Nothing, Nothing)
     End Sub
 
     Public Sub MainProgram()
@@ -84,7 +84,7 @@
         TE = CalcTE()
         TEpercent = TE / TaTPV
         sumTE += UpdateSumTE(targetDate)
-        deltaAdjustment = Math.Max(TaTPV - TPV, 0) / 12
+        deltaAdjustment = Math.Max(10000 + TaTPV - TPV, 0) / 12
 
     End Sub
 

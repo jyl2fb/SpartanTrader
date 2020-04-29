@@ -53,6 +53,10 @@
             MessageBox.Show("Holy BatCloud! No dividend. Not sent.", "Accounting Controls", MessageBoxButtons.OK, MessageBoxIcon.Hand)
             Return False
         End If
+
+        If t.type = "ShortSell" And TooCloseToMaxMargins() Then
+            Return False
+        End If
         'TODO add the other controls
 
         Return True ' if all controls are passed

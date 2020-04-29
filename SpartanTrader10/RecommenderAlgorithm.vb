@@ -27,12 +27,14 @@
 
     Public Sub CalcRecommendation(i As Integer, targetDate As Date)
         Dim famtkr As String
-        Dim famdelta, ipfamdelta, famgamma, ipfamgamma As Double
+        Dim famdelta, ipfamdelta, famgamma, ipfamgamma, famspeed, ipfamspeed As Double
         famtkr = RecommendationFamily(i).Trim()
         famdelta = CalcFamilyDelta(famtkr, targetDate, False)
         ipfamdelta = CalcFamilyDelta(famtkr, targetDate, True) + deltaAdjustment
         famgamma = CalcFamilyGamma(famtkr, targetDate, False)
         ipfamgamma = CalcFamilyGamma(famtkr, targetDate, True)
+        famspeed = CalcFamilySpeed(famtkr, targetDate, False)
+        ipfamspeed = CalcFamilySpeed(famtkr, targetDate, True)
 
         IntermediaryRecList = New List(Of Transaction)
         IntermediaryRecList.Clear()
@@ -44,7 +46,7 @@
                 GetPotentialList(famtkr, targetDate)
                 'Potential Functions
                 'FillPotential(IntermediaryRecList, targetDate)
-                SolvePotential(IntermediaryRecList, targetDate, ipfamdelta, ipfamgamma)
+                SolvePotential(IntermediaryRecList, targetDate, ipfamdelta, ipfamgamma, ipfamspeed)
                 GetSolvedTransaction(IntermediaryRecList)
                 'CalcCandidateRecScores(Recommendations(i), targetDate)
                 'FindBestCandidateRec(Recommendations(i), targetDate)
@@ -71,16 +73,19 @@
 
     Public Function NeedToHedge(famdelta As Double, famgamma As Double, targetDate As Date) As Boolean
         Dim difference As Double = TPV - TaTPV
-        If difference > 0 Then
+        If difference > 100000 Then
+            If Math.Abs(famdelta) > 10 Or Math.Abs(famgamma) > 2.5 Then
+                Return True
+            End If
+        ElseIf difference >= 0 Then
             If Math.Abs(famdelta) > 1000 Or Math.Abs(famgamma) > 250 Then
                 Return True
             End If
-            Return False
-        ElseIf difference < 5000 Then
+            'ElseIf difference < -5000 Then
+        Else
             If Math.Abs(famdelta) > 1000 Or Math.Abs(famgamma) > 250 Then
                 Return True
             End If
-            Return False
         End If
         Return False
     End Function

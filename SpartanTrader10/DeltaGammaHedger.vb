@@ -12,6 +12,7 @@ Module DeltaGammaHedger
                     Dim var = element
                     var.delta = CalcDelta(var.symbol, targetdate)
                     var.gamma = CalcGamma(var.symbol, targetdate)
+                    var.speed = CalcSpeed(var.symbol, targetdate)
                     var.mtm = CalcMTM(var.symbol, targetdate)
                     IntermediaryRecList.Add(var)
                 End If
@@ -20,6 +21,7 @@ Module DeltaGammaHedger
                     Dim var = element
                     var.delta = CalcDelta(var.symbol, targetdate)
                     var.gamma = CalcGamma(var.symbol, targetdate)
+                    var.speed = CalcSpeed(var.symbol, targetdate)
                     var.mtm = CalcMTM(var.symbol, targetdate)
                     IntermediaryRecList.Add(var)
                 End If
@@ -117,8 +119,8 @@ Module DeltaGammaHedger
         Return True
     End Function
 
-    Public Sub SolvePotential(potentialList As List(Of Transaction), targetDate As Date, famdelta As Double, famgamma As Double)
-
+    Public Sub SolvePotential(potentialList As List(Of Transaction), targetDate As Date, famdelta As Double, famgamma As Double, famspeed As Double)
+        Dim TrackingError = TPV - TaTPV
         Dim solver = SolverContext.GetContext()
         solver.ClearModel()
         Dim model = solver.CreateModel()
@@ -148,6 +150,7 @@ Module DeltaGammaHedger
             Dim deltasum = model.Decisions.First(Function(it) it.Name = potential.symbol)
             deltacomponent.Add(deltasum * potential.delta)
         Next
+
         Dim deltaconstraint = deltacomponent.ToTerm() = -1 * famdelta
         model.AddConstraint("Delta", deltaconstraint)
 
@@ -159,15 +162,32 @@ Module DeltaGammaHedger
         Dim gammaconstraint = gammacomponent.ToTerm() = -1 * famgamma
         model.AddConstraint("Gamma", gammaconstraint)
 
+        If TrackingError >= 250000 Then ' CHANGE HERE
+            Dim speedcomponent = New SumTermBuilder(potentialList.Count())
+            For Each potential In potentialList
+                Dim speedsum = model.Decisions.First(Function(it) it.Name = potential.symbol)
+                speedcomponent.Add(speedsum * potential.speed)
+            Next
+            Dim speedconstraint = speedcomponent.ToTerm() = -1 * famspeed
+            model.AddConstraint("Speed", speedconstraint)
+        End If
+
         For var = 0 To potentialList.Count - 1
             Dim i = var
             Dim qvalue = model.Decisions.First(Function(it) it.Name = potentialList(i).symbol)
             Dim tvalue = model.Decisions.First(Function(it) it.Name = Tvariable(i))
             Dim qconstraint = qvalue * potentialList(i).mtm <= tvalue
             Dim qconstraintneg = -1 * qvalue * potentialList(i).mtm <= tvalue
+            Dim marginconstraint = qvalue >= Math.Min(0, GetCurrentPositionInAP(potentialList(i).symbol))
             model.AddConstraint("TP" + i.ToString(), qconstraint)
             model.AddConstraint("TN" + i.ToString(), qconstraintneg)
+
+            If TooCloseToMaxMargins() Then
+                model.AddConstraint("margin" + i.ToString(), marginconstraint)
+            End If
         Next
+
+
 
         Dim solution = solver.Solve()
         If (solution.Quality = SolverQuality.Optimal) Then
@@ -176,6 +196,7 @@ Module DeltaGammaHedger
                 potentee.weight = decision.ToDouble()
                 potentee.familyDelta = famdelta
                 potentee.familyGamma = famgamma
+                potentee.familySpeed = famspeed
             Next
         End If
 
@@ -184,21 +205,21 @@ Module DeltaGammaHedger
     Public Sub GetSolvedTransaction(reclist As List(Of Transaction))
         For Each transaction In reclist
             Dim appos = GetCurrentPositionInAP(transaction.symbol)
-            If transaction.weight = appos Then
-                transaction.type = "Hold"
-                transaction.qty = 0
-            ElseIf transaction.weight > appos Then ' we buy
+            transaction.weight = appos
+            transaction.type = "Hold"
+            transaction.qty = 0
+            If transaction.weight > appos Then ' we buy
                 transaction.type = "Buy"
-                If transaction.weight > 0 And appos < 0 Then
+                If transaction.weight >= 0 And appos <= 0 Then
                     transaction.qty = Math.Abs(appos)
                 Else
                     transaction.qty = Math.Abs(transaction.weight - appos)
                 End If
             ElseIf transaction.weight < appos Then
-                If transaction.weight > 0 And appos > 0 Then
+                If transaction.weight >= 0 And appos >= 0 Then
                     transaction.type = "Sell"
                     transaction.qty = Math.Abs(appos - transaction.weight)
-                ElseIf transaction.weight < 0 And appos > 0 Then
+                ElseIf transaction.weight <= 0 And appos >= 0 Then
                     transaction.type = "Sell"
                     transaction.qty = Math.Abs(appos)
                 Else

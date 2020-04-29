@@ -155,7 +155,7 @@
     Public Sub RoboExecuteAll(tdate As Date)
 
         Globals.ThisWorkbook.Application.ScreenUpdating = False
-        Dim sortlist = FinalRecList.OrderByDescending(Function(x) x.type).ToList()
+        FinalRecList = FinalRecList.OrderByDescending(Function(x) x.type).ToList()
 
         'For i = 0 To 11
         '    Recommendations(i).MarkAsDone()
@@ -184,7 +184,7 @@
         '    End If
         'Next
 
-        For i = 0 To sortlist.Count - 1
+        For i = 0 To FinalRecList.Count - 1
             RoboExecuteRec(i, tdate)
         Next
 

@@ -88,6 +88,34 @@
 
     End Function
 
+    Public Function CalcFamilySpeed(tkr As String, targetDate As Date, initialOnly As Boolean) As Double
+        Dim tempFamSpeed As Double = 0
+        Dim sym As String
+        Dim speed As Double = 0
+        tkr = tkr.Trim()
+        'IP 
+        For Each row As DataRow In myDataSet.Tables("InitialPositionsTbl").Rows
+            sym = row("Symbol").ToString().Trim
+            If IsInTheFamily(sym, tkr) Then
+                speed = CalcSpeed(sym, targetDate)
+                tempFamSpeed += speed * row("units")
+            End If
+        Next
+        If initialOnly Then
+            Return tempFamSpeed
+        End If
+
+        For Each row As DataRow In myDataSet.Tables("AcquiredPositionsTbl").Rows
+            sym = row("Symbol").ToString().Trim()
+            If IsInTheFamily(sym, tkr) Then
+                speed = CalcSpeed(sym, targetDate)
+                tempFamSpeed += speed * row("Units")
+            End If
+        Next
+        Return tempFamSpeed
+
+    End Function
+
     Public Function IsInTheFamily(sym As String, familyTicker As String) As Boolean
         sym = sym.Trim()
         familyTicker = familyTicker.Trim()
@@ -121,7 +149,7 @@
             Return 0
         End If
 
-        If GetAsk(symbol, currentDate) = 0 Then
+        If GetAsk(symbol, currentDate) = 0 Or GetBid(symbol, currentDate) = 0 Then
             Return 0
         End If
         underlier = GetUnderlier(symbol)
@@ -170,6 +198,41 @@
         d1 = (Math.Log(S / K) + (r + sigma * sigma / 2) * t) / (sigma * Math.Sqrt(t))
 
         answer = (Globals.ThisWorkbook.Application.WorksheetFunction.NormDist(d1, 0, 1, False)) / (S * sigma * Math.Sqrt(t)) 'TODO add dividend
+        Return answer
+    End Function
+
+    Public Function CalcSpeed(symbol As String, targetdate As Date) As Double
+        Dim sigma, K, S, t, d1, gamma As Double
+        Dim ts As TimeSpan
+        Dim r As Double = riskFreeRate
+        Dim underlier As String
+        Dim answer As Double
+
+        If symbol = "CAccount" Then
+            Return 0
+        End If
+
+        If IsAStock(symbol) Then
+            Return 0
+        End If
+
+        If targetdate >= GetExpiration(symbol).Date Then
+            Return 0
+        End If
+
+        If GetAsk(symbol, currentDate) = 0 Then
+            Return 0
+        End If
+
+        underlier = GetUnderlier(symbol)
+        sigma = GetVol(underlier)
+        K = GetStrike(symbol)
+        S = CalcMTM(underlier, targetdate)
+        ts = GetExpiration(symbol).Date - targetdate.Date
+        t = ts.Days / 365.25
+        d1 = (Math.Log(S / K) + (r + sigma * sigma / 2) * t) / (sigma * Math.Sqrt(t))
+        gamma = CalcGamma(symbol, targetdate)
+        answer = (-gamma / S) * (d1 / (sigma * Math.Sqrt(t)) + 1)
         Return answer
     End Function
 

@@ -34,6 +34,9 @@
     Public familyGamma As Double
     Public weight As Double
 
+    Public speed As Double
+    Public familySpeed As Double
+
     Public Sub Show()
         Globals.Dashboard.Range("C04").Value = type
         Globals.Dashboard.Range("C05").Value = qty
@@ -87,7 +90,7 @@
             dividend = 0
             underlier = GetUnderlier(symbol)
             expiration = GetExpiration(symbol)
-            mtm = CalcMTM(underlier, targetDate)
+            mtm = CalcMTM(symbol, targetDate)
             mtmUnderlier = CalcMTM(underlier, targetDate)
         End If
         FindTransactionPrice(symbol, targetDate)
