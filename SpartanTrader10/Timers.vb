@@ -73,7 +73,6 @@
     End Sub
 
     Public Sub FirstDayStart()
-        Reset()
         currentDate = DownloadCurrentDate()
         DownloadStaticData()
         DownloadTeamData(currentDate)
