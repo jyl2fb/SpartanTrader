@@ -154,7 +154,7 @@
 
     Public Sub RoboExecuteAll(tdate As Date)
 
-        Globals.ThisWorkbook.Application.ScreenUpdating = False
+
         FinalRecList = FinalRecList.OrderByDescending(Function(x) x.type).ToList()
 
         'For i = 0 To 11
@@ -188,7 +188,7 @@
             RoboExecuteRec(i, tdate)
         Next
 
-        Globals.ThisWorkbook.Application.ScreenUpdating = True
+
     End Sub
 
     Public Sub RoboExecuteStepByStep(tdate As Date)

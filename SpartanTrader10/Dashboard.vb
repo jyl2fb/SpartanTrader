@@ -184,7 +184,7 @@ Public Class Dashboard
     Public Sub SetupTEChart()
         'create the table
         If myDataSet.Tables.Contains("TETbl") Then
-            myDataSet.Tables("TETbl").Clear()
+            'myDataSet.Tables("TETbl").Clear
         Else ' create a new table in the dataset
             myDataSet.Tables.Add("TETbl")
             myDataSet.Tables("TETbl").Columns.Add("Date", GetType(Date))

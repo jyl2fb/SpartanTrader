@@ -127,6 +127,7 @@
     End Sub
 
     Public Sub RunDailyRoutine(tdate As Date)
+        Globals.ThisWorkbook.Application.ScreenUpdating = False
         Globals.Dashboard.DateLine.Value = tdate.ToLongDateString()
         CalcFinancialMetrics(tdate)
         DisplayFinancialMetrics(tdate)
@@ -140,7 +141,7 @@
                 CalcAllRecommendations(currentDate)
                 RoboExecuteAll(tdate)
             Case "StepSim"
-                    RoboExecuteStepByStep(tdate)
+                RoboExecuteStepByStep(tdate)
             Case "Sync"
                 CalcAllRecommendations(currentDate)
                 Globals.Dashboard.DisplayAllRecommendations()
@@ -148,6 +149,8 @@
                 CalcAllRecommendations(currentDate)
                 RoboExecuteAll(tdate)
         End Select
+
+        Globals.ThisWorkbook.Application.ScreenUpdating = True
 
     End Sub
 
