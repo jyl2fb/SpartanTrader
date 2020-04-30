@@ -69,7 +69,7 @@
     Public Function NeedToHedge(famdelta As Double, famgamma As Double, targetDate As Date) As Boolean
         Dim difference As Double = TPV - TaTPV
 
-        If difference > 1000000 Then
+        If difference > 3000000 Then
             highenoughline = True
             If Math.Abs(famdelta) > 1000 Or Math.Abs(famgamma) > 250 Then
                 Return True

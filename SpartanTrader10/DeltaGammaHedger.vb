@@ -8,10 +8,10 @@ Module DeltaGammaHedger
         Dim templist As List(Of Transaction)
         Dim familyDelta = CalcFamilyDelta(famtkr, targetdate, False)
         Dim familyGamma = CalcFamilyGamma(famtkr, targetdate, False)
-        'Dim familySpeed = CalcFamilySpeed(famtkr, targetdate, False)
+        Dim familySpeed = CalcFamilySpeed(famtkr, targetdate, False)
         Dim ipfamilydelta = CalcFamilyDelta(famtkr, targetdate, True) + deltaAdjustment
         Dim ipfamilygamma = CalcFamilyGamma(famtkr, targetdate, True)
-        'Dim ipfamilyspeed = CalcFamilySpeed(famtkr, targetdate, True)
+        Dim ipfamilyspeed = CalcFamilySpeed(famtkr, targetdate, True)
         If NeedToHedge(familyDelta, familyGamma, targetdate) Then
 
             If targetdate.Month >= 7 Then
@@ -29,8 +29,8 @@ Module DeltaGammaHedger
                 var.ipfamilydelta = ipfamilydelta
                 var.familyGamma = familyGamma
                 var.ipfamilygamma = ipfamilygamma
-                'var.familySpeed = familySpeed
-                'var.ipfamilyspeed = ipfamilyspeed
+                var.familySpeed = familySpeed
+                var.ipfamilyspeed = ipfamilyspeed
                 If var.mtm >= 0.01 Then
                     IntermediaryRecList.Add(var)
                 End If
@@ -191,19 +191,19 @@ Module DeltaGammaHedger
 
                 Dim gammaconstraint = gammacomponent.ToTerm() = -1 * famgamma
 
-                'If Math.Abs(margin) <= marginline Then
-                model.AddConstraint("Gamma" + family, gammaconstraint)
-                'End If
+                If Math.Abs(margin) <= marginline Then
+                    model.AddConstraint("Gamma" + family, gammaconstraint)
+                End If
 
-                'If highenoughline Then ' CHANGE HERE
-                '    Dim speedcomponent = New SumTermBuilder(potentialList.Count())
-                '    For Each potential In currentlist
-                '        Dim speedsum = model.Decisions.First(Function(it) it.Name = potential.symbol)
-                '        speedcomponent.Add(speedsum * potential.speed)
-                '    Next
-                '    Dim speedconstraint = speedcomponent.ToTerm() = -1 * famspeed
-                '    model.AddConstraint("Speed" + family, speedconstraint)
-                'End If
+                If highenoughline Then ' CHANGE HERE
+                    Dim speedcomponent = New SumTermBuilder(potentialList.Count())
+                    For Each potential In currentlist
+                        Dim speedsum = model.Decisions.First(Function(it) it.Name = potential.symbol)
+                        speedcomponent.Add(speedsum * potential.speed)
+                    Next
+                    Dim speedconstraint = speedcomponent.ToTerm() = -1 * famspeed
+                    model.AddConstraint("Speed" + family, speedconstraint)
+                End If
 
                 For var = 0 To currentlist.Count - 1
                     Dim i = var
