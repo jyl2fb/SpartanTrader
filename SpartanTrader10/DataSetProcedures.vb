@@ -55,10 +55,9 @@
                 Return Double.Parse(value)
             End If
         Next
-        MessageBox.Show("holy Batkeyboard! could not find 'CAccount'. I reset the portfolio!",
-                        "Reset Portfolio", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        'MessageBox.Show("holy Batkeyboard! could not find 'CAccount'. I reset the portfolio!", "Reset Portfolio", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         UploadPosition("CAccount", GetInitialCAccount())
-        Globals.Ribbons.RibbonST.AcquiredPositionsButton_Click(Nothing, Nothing)
+        'Globals.Ribbons.RibbonST.AcquiredPositionsButton_Click(Nothing, Nothing)
         Return GetInitialCAccount()
     End Function
 
