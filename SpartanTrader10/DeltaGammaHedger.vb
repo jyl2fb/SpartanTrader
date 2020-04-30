@@ -177,6 +177,7 @@ Module DeltaGammaHedger
             model.AddConstraint("Speed", speedconstraint)
         End If
 
+
         For var = 0 To potentialList.Count - 1
             Dim i = var
             Dim qvalue = model.Decisions.First(Function(it) it.Name = potentialList(i).symbol)
@@ -184,7 +185,7 @@ Module DeltaGammaHedger
             Dim qconstraint = qvalue * potentialList(i).mtm <= tvalue
             Dim qconstraintneg = -1 * qvalue * potentialList(i).mtm <= tvalue
             Dim marginconstraint = qvalue >= Math.Min(0, GetCurrentPositionInAP(potentialList(i).symbol))
-            Dim marginconstraint2 = qvalue >= Math.Min(0, GetCurrentPositionInAP(potentialList(i).symbol)) * 0.9
+            Dim marginconstraint2 = qvalue >= Math.Min(0, GetCurrentPositionInAP(potentialList(i).symbol)) * (1 - 0.1 * (Math.Abs(margin) - 8000000) / 1000000)
             model.AddConstraint("TP" + i.ToString(), qconstraint)
             model.AddConstraint("TN" + i.ToString(), qconstraintneg)
 

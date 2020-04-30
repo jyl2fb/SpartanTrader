@@ -84,7 +84,7 @@
         TE = CalcTE()
         TEpercent = TE / TaTPV
         sumTE += UpdateSumTE(targetDate)
-        deltaAdjustment = Math.Max(10000 + TaTPV - TPV, 0) / 48
+        deltaAdjustment = Math.Sqrt(1000000000 + Math.Max(TaTPV - TPV, 0)) / 24
 
     End Sub
 
@@ -129,10 +129,10 @@
     Public Sub RunDailyRoutine(tdate As Date)
 
         Globals.Dashboard.DateLine.Value = tdate.ToLongDateString()
-        Globals.ThisWorkbook.Application.ScreenUpdating = False
         CalcFinancialMetrics(tdate)
         DisplayFinancialMetrics(tdate)
         Globals.Dashboard.UpdateTEChart(tdate)
+        Globals.ThisWorkbook.Application.ScreenUpdating = False
         ResetAllRecommendations()
         Select Case traderMode
             Case "Manual"
@@ -141,19 +141,18 @@
             Case "Simulation"
                 CalcAllRecommendations(currentDate)
                 RoboExecuteAll(tdate)
-                Globals.ThisWorkbook.Application.ScreenUpdating = True
+
             Case "StepSim"
                 RoboExecuteStepByStep(tdate)
             Case "Sync"
                 CalcAllRecommendations(currentDate)
                 Globals.Dashboard.DisplayAllRecommendations()
-                Globals.ThisWorkbook.Application.ScreenUpdating = True
             Case "RoboTrader"
                 CalcAllRecommendations(currentDate)
                 RoboExecuteAll(tdate)
         End Select
 
-
+        Globals.ThisWorkbook.Application.ScreenUpdating = True
 
     End Sub
 

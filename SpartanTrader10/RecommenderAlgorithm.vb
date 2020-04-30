@@ -177,7 +177,7 @@
     End Function
 
     Public Function TooCloseToMaxMargins2() As Boolean
-        If ((maxMargin - Math.Abs(margin)) < 1500000) Then
+        If ((maxMargin - Math.Abs(margin)) < 7000000) Then
             Return True
         Else
             Return False
