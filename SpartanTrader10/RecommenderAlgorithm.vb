@@ -75,8 +75,8 @@
         Dim difference As Double = TPV - TaTPV
 
         If difference > 1000000 Then
-            highenoughline = True
-            If Math.Abs(famdelta) > 100 Or Math.Abs(famgamma) > 250 Then
+            'highenoughline = True
+            If Math.Abs(famdelta) > 1000 Or Math.Abs(famgamma) > 250 Then
                 Return True
             End If
         ElseIf difference >= 0 Then
@@ -85,7 +85,7 @@
             End If
             'ElseIf difference < -5000 Then
         Else
-            highenoughline = False
+            'highenoughline = False
             If Math.Abs(famdelta) > 1000 Or Math.Abs(famgamma) > 250 Then
                 Return True
             End If
@@ -169,7 +169,7 @@
     End Sub
 
     Public Function TooCloseToMaxMargins() As Boolean
-        If ((maxMargin - Math.Abs(margin)) < 2000000) Then
+        If ((maxMargin - Math.Abs(margin)) < 3000000) Then
             Return True
         Else
             Return False
@@ -177,7 +177,7 @@
     End Function
 
     Public Function TooCloseToMaxMargins2() As Boolean
-        If ((maxMargin - Math.Abs(margin)) < 7000000) Then
+        If ((maxMargin - Math.Abs(margin)) < 5000000) Then
             Return True
         Else
             Return False

@@ -151,31 +151,34 @@ Module DeltaGammaHedger
         model.AddGoal("MinimizeT", GoalKind.Minimize, objective.ToTerm())
 
         Dim deltacomponent = New SumTermBuilder(potentialList.Count())
+        Dim gammacomponent = New SumTermBuilder(potentialList.Count())
         For Each potential In potentialList
-            Dim deltasum = model.Decisions.First(Function(it) it.Name = potential.symbol)
-            deltacomponent.Add(deltasum * potential.delta)
+            Dim weight = model.Decisions.First(Function(it) it.Name = potential.symbol)
+            deltacomponent.Add(weight * potential.delta)
+            gammacomponent.Add(weight * potential.gamma)
         Next
 
         Dim deltaconstraint = deltacomponent.ToTerm() = -1 * famdelta
         model.AddConstraint("Delta", deltaconstraint)
 
-        Dim gammacomponent = New SumTermBuilder(potentialList.Count())
-        For Each potential In potentialList
-            Dim gammasum = model.Decisions.First(Function(it) it.Name = potential.symbol)
-            gammacomponent.Add(gammasum * potential.gamma)
-        Next
+
+        'Dim gammacomponent = New SumTermBuilder(potentialList.Count())
+        'For Each potential In potentialList
+        '    Dim gammasum = model.Decisions.First(Function(it) it.Name = potential.symbol)
+        'gammacomponent.Add(gammasum * potential.gamma)
+        'Next
         Dim gammaconstraint = gammacomponent.ToTerm() = -1 * famgamma
         model.AddConstraint("Gamma", gammaconstraint)
 
-        If highenoughline Then ' CHANGE HERE
-            Dim speedcomponent = New SumTermBuilder(potentialList.Count())
-            For Each potential In potentialList
-                Dim speedsum = model.Decisions.First(Function(it) it.Name = potential.symbol)
-                speedcomponent.Add(speedsum * potential.speed)
-            Next
-            Dim speedconstraint = speedcomponent.ToTerm() = -1 * famspeed
-            model.AddConstraint("Speed", speedconstraint)
-        End If
+        'If highenoughline Then ' CHANGE HERE
+        '    Dim speedcomponent = New SumTermBuilder(potentialList.Count())
+        '    For Each potential In potentialList
+        '        Dim speedsum = model.Decisions.First(Function(it) it.Name = potential.symbol)
+        '        speedcomponent.Add(speedsum * potential.speed)
+        '    Next
+        '    Dim speedconstraint = speedcomponent.ToTerm() = -1 * famspeed
+        '    model.AddConstraint("Speed", speedconstraint)
+        'End If
 
 
         For var = 0 To potentialList.Count - 1
@@ -184,8 +187,9 @@ Module DeltaGammaHedger
             Dim tvalue = model.Decisions.First(Function(it) it.Name = Tvariable(i))
             Dim qconstraint = qvalue * potentialList(i).mtm <= tvalue
             Dim qconstraintneg = -1 * qvalue * potentialList(i).mtm <= tvalue
+            Dim icurrentpositioninap = GetCurrentPositionInAP(potentialList(i).symbol)
             Dim marginconstraint = qvalue >= Math.Min(0, GetCurrentPositionInAP(potentialList(i).symbol))
-            Dim marginconstraint2 = qvalue >= Math.Min(0, GetCurrentPositionInAP(potentialList(i).symbol)) * (1 - 0.1 * (Math.Abs(margin) - 8000000) / 1000000)
+            'Dim marginconstraint2 = qvalue >= Math.Min(0, GetCurrentPositionInAP(potentialList(i).symbol)) * (1 - 0.2 * (Math.Abs(margin) - 10000000) / 1000000)
             model.AddConstraint("TP" + i.ToString(), qconstraint)
             model.AddConstraint("TN" + i.ToString(), qconstraintneg)
 
@@ -193,9 +197,9 @@ Module DeltaGammaHedger
                 model.AddConstraint("margin" + i.ToString(), marginconstraint)
             End If
 
-            If TooCloseToMaxMargins2() Then
-                model.AddConstraint("margin2" + i.ToString(), marginconstraint2)
-            End If
+            'If TooCloseToMaxMargins2() Then
+            '    model.AddConstraint("margin2" + i.ToString(), marginconstraint2)
+            'End If
         Next
 
 

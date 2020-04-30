@@ -84,7 +84,7 @@
         TE = CalcTE()
         TEpercent = TE / TaTPV
         sumTE += UpdateSumTE(targetDate)
-        deltaAdjustment = Math.Sqrt(1000000000 + Math.Max(TaTPV - TPV, 0)) / 24
+        deltaAdjustment = (Math.Max(200000 + TaTPV - TPV, 0)) / 12
 
     End Sub
 
