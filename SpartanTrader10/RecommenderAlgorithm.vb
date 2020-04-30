@@ -13,9 +13,31 @@
     End Sub
 
     Public Sub CalcAllRecommendations(targetDate As Date)
+        IntermediaryRecList = New List(Of Transaction)
+        IntermediaryRecList.Clear()
+
         For i = 0 To 11
             CalcRecommendation(i, targetDate)
         Next
+
+        SolvePotential(IntermediaryRecList, targetDate)
+        GetSolvedTransaction(IntermediaryRecList)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         If julyoptionssold = False Then
             If targetDate.Month = 7 Then
@@ -27,31 +49,17 @@
 
     Public Sub CalcRecommendation(i As Integer, targetDate As Date)
         Dim famtkr As String
-        Dim famdelta, ipfamdelta, famgamma, ipfamgamma, famspeed, ipfamspeed As Double
-        famtkr = RecommendationFamily(i).Trim()
-        famdelta = CalcFamilyDelta(famtkr, targetDate, False)
-        ipfamdelta = CalcFamilyDelta(famtkr, targetDate, True) + deltaAdjustment
-        famgamma = CalcFamilyGamma(famtkr, targetDate, False)
-        ipfamgamma = CalcFamilyGamma(famtkr, targetDate, True)
-        famspeed = CalcFamilySpeed(famtkr, targetDate, False)
-        ipfamspeed = CalcFamilySpeed(famtkr, targetDate, True)
-
-        IntermediaryRecList = New List(Of Transaction)
-        IntermediaryRecList.Clear()
-
+        famtkr = RecommendationFamily(i).ToString.Trim()
         If HedgingToday(targetDate) = True Then
-            'intreclisthere?
-            If NeedToHedge(famdelta, famgamma, targetDate) = True Then
-                'clear potentialist
-                GetPotentialList(famtkr, targetDate)
-                'Potential Functions
-                'FillPotential(IntermediaryRecList, targetDate)
-                SolvePotential(IntermediaryRecList, targetDate, ipfamdelta, ipfamgamma, ipfamspeed)
-                GetSolvedTransaction(IntermediaryRecList)
-                'CalcCandidateRecScores(Recommendations(i), targetDate)
-                'FindBestCandidateRec(Recommendations(i), targetDate)
-                Application.DoEvents()
-            End If
+
+            GetPotentialList(famtkr, targetDate)
+            'Potential Functions
+            'FillPotential(IntermediaryRecList, targetDate)
+            'SolvePotential(IntermediaryRecList, targetDate, ipfamdelta, ipfamgamma, ipfamspeed)
+            'GetSolvedTransaction(IntermediaryRecList)
+            ''CalcCandidateRecScores(Recommendations(i), targetDate)
+            ''FindBestCandidateRec(Recommendations(i), targetDate)
+            'Application.DoEvents()
         End If
     End Sub
 
@@ -169,7 +177,7 @@
     End Sub
 
     Public Function TooCloseToMaxMargins() As Boolean
-        If ((maxMargin - Math.Abs(margin)) < 3000000) Then
+        If ((maxMargin - Math.Abs(margin)) < 1000000) Then
             Return True
         Else
             Return False

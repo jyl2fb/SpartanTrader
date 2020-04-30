@@ -36,6 +36,9 @@
 
     Public speed As Double
     Public familySpeed As Double
+    Public ipfamilydelta As Double
+    Public ipfamilygamma As Double
+    Public ipfamilyspeed As Double
 
     Public Sub Show()
         Globals.Dashboard.Range("C04").Value = type

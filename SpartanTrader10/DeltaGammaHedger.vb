@@ -4,58 +4,60 @@ Imports Microsoft.SolverFoundation.Services
 Module DeltaGammaHedger
 
     Public Sub GetPotentialList(famtkr As String, targetdate As Date)
-        IntermediaryRecList.Clear()
 
-        For Each element In MasterRecList
+        Dim templist As List(Of Transaction)
+        Dim familyDelta = CalcFamilyDelta(famtkr, targetdate, False)
+        Dim familyGamma = CalcFamilyGamma(famtkr, targetdate, False)
+        'Dim familySpeed = CalcFamilySpeed(famtkr, targetdate, False)
+        Dim ipfamilydelta = CalcFamilyDelta(famtkr, targetdate, True) + deltaAdjustment
+        Dim ipfamilygamma = CalcFamilyGamma(famtkr, targetdate, True)
+        'Dim ipfamilyspeed = CalcFamilySpeed(famtkr, targetdate, True)
+        If NeedToHedge(familyDelta, familyGamma, targetdate) Then
+
             If targetdate.Month >= 7 Then
-                If element.familyTicker = famtkr And ExpiresInJuly(element.symbol) = False Then
-                    Dim var = element
-                    var.delta = CalcDelta(var.symbol, targetdate)
-                    var.gamma = CalcGamma(var.symbol, targetdate)
-                    var.speed = CalcSpeed(var.symbol, targetdate)
-                    var.mtm = CalcMTM(var.symbol, targetdate)
-                    If var.mtm >= 0.02 Then
-                        IntermediaryRecList.Add(var)
-                    End If
-                End If
+                templist = MasterRecList.FindAll(Function(p) p.familyTicker.Trim() = famtkr.Trim() And ExpiresInJuly(p.symbol) = False)
             Else
-                If element.familyTicker = famtkr Then
-                    Dim var = element
-                    var.delta = CalcDelta(var.symbol, targetdate)
-                    var.gamma = CalcGamma(var.symbol, targetdate)
-                    var.speed = CalcSpeed(var.symbol, targetdate)
-                    var.mtm = CalcMTM(var.symbol, targetdate)
-                    If var.mtm >= 0.02 Then
-                        IntermediaryRecList.Add(var)
-                    End If
-                End If
+                templist = MasterRecList.FindAll(Function(p) p.familyTicker.Trim() = famtkr.Trim())
             End If
-        Next
-        'For Each myRow As DataRow In myDataSet.Tables("TickersTbl").Rows
-        '    If CheckAvailability(myRow("Ticker"), targetdate) Then
-        '        If myRow("Ticker").ToString.Trim() = famtkr Then
-        '            'mylist.Add(myRow("Ticker").ToString.Trim())
-        '            Dim tempTransaction As New Transaction
-        '            tempTransaction.symbol = famtkr
-        '            tempTransaction.familyTicker = famtkr
-        '            tempTransaction.delta = 1
-        '            tempTransaction.gamma = 0
-        '            tempTransaction.mtm = CalcMTM(famtkr, currentDate)
-        '            IntermediaryRecList.Add(tempTransaction)
+
+            For Each var In templist
+                var.delta = CalcDelta(var.symbol, targetdate)
+                var.gamma = CalcGamma(var.symbol, targetdate)
+                var.speed = CalcSpeed(var.symbol, targetdate)
+                var.mtm = CalcMTM(var.symbol, targetdate)
+                var.familyDelta = familyDelta
+                var.ipfamilydelta = ipfamilydelta
+                var.familyGamma = familyGamma
+                var.ipfamilygamma = ipfamilygamma
+                'var.familySpeed = familySpeed
+                'var.ipfamilyspeed = ipfamilyspeed
+            Next
+
+            IntermediaryRecList.AddRange(templist)
+
+        End If
+        'For Each element In MasterRecList
+        '    If targetdate.Month >= 7 Then
+        '        If element.familyTicker = famtkr And ExpiresInJuly(element.symbol) = False Then
+        '            Dim var = element
+        '            var.delta = CalcDelta(var.symbol, targetdate)
+        '            var.gamma = CalcGamma(var.symbol, targetdate)
+        '            var.speed = CalcSpeed(var.symbol, targetdate)
+        '            var.mtm = CalcMTM(var.symbol, targetdate)
+        '            If var.mtm >= 0.02 Then
+        '                IntermediaryRecList.Add(var)
+        '            End If
         '        End If
-        '    End If
-        'Next
-        'For Each myRow As DataRow In myDataSet.Tables("SymbolsTbl").Rows
-        '    If CheckAvailability(myRow("Symbol"), targetdate) Then
-        '        If IsInTheFamily(myRow("Symbol").ToString.Trim(), famtkr) Then
-        '            'mylist.Add(myRow("Symbol").ToString.Trim())
-        '            Dim tempTransaction As New Transaction
-        '            tempTransaction.symbol = myRow("Symbol").ToString.Trim()
-        '            tempTransaction.familyTicker = famtkr
-        '            tempTransaction.delta = CalcDelta(myRow("Symbol").ToString.Trim(), targetdate)
-        '            tempTransaction.gamma = CalcGamma(myRow("Symbol").ToString.Trim(), targetdate)
-        '            tempTransaction.mtm = CalcMTM(myRow("Symbol").ToString.Trim(), targetdate)
-        '            IntermediaryRecList.Add(tempTransaction)
+        '    Else
+        '        If element.familyTicker = famtkr Then
+        '            Dim var = element
+        '            var.delta = CalcDelta(var.symbol, targetdate)
+        '            var.gamma = CalcGamma(var.symbol, targetdate)
+        '            var.speed = CalcSpeed(var.symbol, targetdate)
+        '            var.mtm = CalcMTM(var.symbol, targetdate)
+        '            If var.mtm >= 0.02 Then
+        '                IntermediaryRecList.Add(var)
+        '            End If
         '        End If
         '    End If
         'Next
@@ -123,85 +125,102 @@ Module DeltaGammaHedger
         Return True
     End Function
 
-    Public Sub SolvePotential(potentialList As List(Of Transaction), targetDate As Date, famdelta As Double, famgamma As Double, famspeed As Double)
+    Public Sub SolvePotential(potentialList As List(Of Transaction), targetDate As Date)
 
-        Dim TrackingError = TPV - TaTPV
         Dim solver = SolverContext.GetContext()
         solver.ClearModel()
         Dim model = solver.CreateModel()
-        Dim decisions = potentialList.[Select](Function(it) New Decision(Domain.Real, it.symbol))
-        Dim tempname As String
-        Dim Tvariable(potentialList.Count - 1)
-        For i = 0 To potentialList.Count() - 1
-            Dim tempcounter = i
-            tempname = "T" + tempcounter.ToString()
-            Tvariable(i) = tempname
-            Dim tempDecision = New Decision(Domain.Real, tempname)
-            decisions = decisions.Append(tempDecision)
-        Next
-        model.AddDecisions(decisions.ToArray())
+        'Dim tempname2 As String
 
-        Dim objective = New SumTermBuilder(potentialList.Count())
-
-        For Each t In Tvariable
-            Dim TDecision = model.Decisions.First(Function(it) it.Name = t)
-            objective.Add(TDecision)
-        Next
-
-        model.AddGoal("MinimizeT", GoalKind.Minimize, objective.ToTerm())
-
-        Dim deltacomponent = New SumTermBuilder(potentialList.Count())
-        Dim gammacomponent = New SumTermBuilder(potentialList.Count())
-        For Each potential In potentialList
-            Dim weight = model.Decisions.First(Function(it) it.Name = potential.symbol)
-            deltacomponent.Add(weight * potential.delta)
-            gammacomponent.Add(weight * potential.gamma)
-        Next
-
-        Dim deltaconstraint = deltacomponent.ToTerm() = -1 * famdelta
-        model.AddConstraint("Delta", deltaconstraint)
-
-
-        'Dim gammacomponent = New SumTermBuilder(potentialList.Count())
-        'For Each potential In potentialList
-        '    Dim gammasum = model.Decisions.First(Function(it) it.Name = potential.symbol)
-        'gammacomponent.Add(gammasum * potential.gamma)
+        'Dim Yvariable(potentialList.Count - 1)
+        'For i = 0 To potentialList.Count() - 1
+        '    Dim tempcounter = i
+        '    tempname2 = "Y" + tempcounter.ToString()
+        '    Yvariable(i) = tempname2
+        '    Dim tempDecision2 = New Decision(Domain.Real, tempname2)
+        '    decisions = decisions.Append(tempDecision2)
         'Next
-        Dim gammaconstraint = gammacomponent.ToTerm() = -1 * famgamma
-        model.AddConstraint("Gamma", gammaconstraint)
+        'Dim ycomponent = New SumTermBuilder(potentialList.Count())
+        'For Each y In Yvariable
+        '    Dim yweight = model.Decisions.First(Function(it) it.Name = y)
+        '    ycomponent.Add(yweight)
+        'Next
+        'Dim yconstraintgeneral = ycomponent.ToTerm <= 2 * marginline
+        'model.AddConstraint("YNumberConstraint", yconstraintgeneral)
+        'Dim yvalue = model.Decisions.First(Function(it) it.Name = Yvariable(i))
+        'Dim yconstraint = yvalue >= 0
+        'Dim yconstraintneg = yvalue >= -2 * qvalue
 
-        'If highenoughline Then ' CHANGE HERE
-        '    Dim speedcomponent = New SumTermBuilder(potentialList.Count())
-        '    For Each potential In potentialList
-        '        Dim speedsum = model.Decisions.First(Function(it) it.Name = potential.symbol)
-        '        speedcomponent.Add(speedsum * potential.speed)
-        '    Next
-        '    Dim speedconstraint = speedcomponent.ToTerm() = -1 * famspeed
-        '    model.AddConstraint("Speed", speedconstraint)
-        'End If
+        'model.AddConstraint("YP" + i.ToString(), yconstraint)
+        'model.AddConstraint("YN" + i.ToString(), yconstraintneg)
+
+        For Each family In RecommendationFamily
+            Dim currentlist = potentialList.FindAll(Function(x) x.familyTicker.Trim() = family.Trim())
+            If currentlist.Count > 0 Then
+                Dim decisions = currentlist.[Select](Function(it) New Decision(Domain.Real, it.symbol))
+                Dim tempname As String
+                Dim famdelta = currentlist(0).ipfamilydelta
+                Dim famgamma = currentlist(0).ipfamilygamma
+                'Dim famspeed = currentlist(0).ipfamilyspeed
+
+                Dim Tvariable(currentlist.Count - 1)
+                For i = 0 To currentlist.Count() - 1
+                    Dim tempcounter = i
+                    tempname = "T" + family + tempcounter.ToString()
+                    Tvariable(i) = tempname
+                    Dim tempDecision = New Decision(Domain.Real, tempname)
+                    decisions = decisions.Append(tempDecision)
+                Next
+
+                model.AddDecisions(decisions.ToArray())
+
+                Dim objective = New SumTermBuilder(currentlist.Count())
+
+                For Each t In Tvariable
+                    Dim TDecision = model.Decisions.First(Function(it) it.Name = t)
+                    objective.Add(TDecision)
+                Next
+
+                model.AddGoal("MinimizeT" + family, GoalKind.Minimize, objective.ToTerm())
+                Dim deltacomponent = New SumTermBuilder(currentlist.Count())
+                Dim gammacomponent = New SumTermBuilder(currentlist.Count())
+
+                For Each potential In currentlist
+                    Dim weight = model.Decisions.First(Function(it) it.Name = potential.symbol)
+                    deltacomponent.Add(weight * potential.delta)
+                    gammacomponent.Add(weight * potential.gamma)
+                Next
+
+                Dim deltaconstraint = deltacomponent.ToTerm() = -1 * famdelta
+                model.AddConstraint("Delta" + family, deltaconstraint)
+
+                Dim gammaconstraint = gammacomponent.ToTerm() = -1 * famgamma
+                model.AddConstraint("Gamma" + family, gammaconstraint)
 
 
-        For var = 0 To potentialList.Count - 1
-            Dim i = var
-            Dim qvalue = model.Decisions.First(Function(it) it.Name = potentialList(i).symbol)
-            Dim tvalue = model.Decisions.First(Function(it) it.Name = Tvariable(i))
-            Dim qconstraint = qvalue * potentialList(i).mtm <= tvalue
-            Dim qconstraintneg = -1 * qvalue * potentialList(i).mtm <= tvalue
-            Dim icurrentpositioninap = GetCurrentPositionInAP(potentialList(i).symbol)
-            Dim marginconstraint = qvalue >= Math.Min(0, GetCurrentPositionInAP(potentialList(i).symbol))
-            'Dim marginconstraint2 = qvalue >= Math.Min(0, GetCurrentPositionInAP(potentialList(i).symbol)) * (1 - 0.2 * (Math.Abs(margin) - 10000000) / 1000000)
-            model.AddConstraint("TP" + i.ToString(), qconstraint)
-            model.AddConstraint("TN" + i.ToString(), qconstraintneg)
+                'If highenoughline Then ' CHANGE HERE
+                '    Dim speedcomponent = New SumTermBuilder(potentialList.Count())
+                '    For Each potential In currentList
+                '        Dim speedsum = model.Decisions.First(Function(it) it.Name = potential.symbol)
+                '        speedcomponent.Add(speedsum * potential.speed)
+                '    Next
+                '    Dim speedconstraint = speedcomponent.ToTerm() = -1 * famspeed
+                '    model.AddConstraint("Speed"+ family, speedconstraint)
+                'End If
 
-            If TooCloseToMaxMargins() Then
-                model.AddConstraint("margin" + i.ToString(), marginconstraint)
+                For var = 0 To currentlist.Count - 1
+                    Dim i = var
+                    Dim qvalue = model.Decisions.First(Function(it) it.Name = currentlist(i).symbol)
+                    Dim tvalue = model.Decisions.First(Function(it) it.Name = Tvariable(i))
+                    Dim qconstraint = qvalue * potentialList(i).mtm <= tvalue
+                    Dim qconstraintneg = -1 * qvalue * potentialList(i).mtm <= tvalue
+
+                    model.AddConstraint("TP" + family + i.ToString(), qconstraint)
+                    model.AddConstraint("TN" + family + i.ToString(), qconstraintneg)
+
+                Next
             End If
-
-            'If TooCloseToMaxMargins2() Then
-            '    model.AddConstraint("margin2" + i.ToString(), marginconstraint2)
-            'End If
         Next
-
 
 
         Dim solution = solver.Solve()
@@ -209,9 +228,6 @@ Module DeltaGammaHedger
             For Each potentee In potentialList
                 Dim decision = model.Decisions.First(Function(it) it.Name = potentee.symbol)
                 potentee.weight = decision.ToDouble()
-                potentee.familyDelta = famdelta
-                potentee.familyGamma = famgamma
-                potentee.familySpeed = famspeed
             Next
         End If
 

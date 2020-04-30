@@ -68,7 +68,7 @@
         initialCAccount = GetInitialCAccount()
         TPVatStart = CalcTPVAtStart()
         For Each myRow As DataRow In myDataSet.Tables("TickersTbl").Rows
-            RecommendationFamily(myDataSet.Tables("TickersTbl").Rows.IndexOf(myRow)) = myRow("Ticker")
+            RecommendationFamily(myDataSet.Tables("TickersTbl").Rows.IndexOf(myRow)) = myRow("Ticker").Trim
         Next
         MasterRecList = New List(Of Transaction)
     End Sub

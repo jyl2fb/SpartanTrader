@@ -41,4 +41,6 @@
     Public deltaAdjustment As Double = -10000
     Public highenoughline As Boolean = False
 
+    Public marginline As Double = 14000000
+
 End Module
