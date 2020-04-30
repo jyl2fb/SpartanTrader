@@ -70,7 +70,7 @@
         Dim difference As Double = TPV - TaTPV
 
         If difference > 1000000 Then
-            'highenoughline = True
+            highenoughline = True
             If Math.Abs(famdelta) > 1000 Or Math.Abs(famgamma) > 250 Then
                 Return True
             End If
@@ -80,7 +80,7 @@
             End If
             'ElseIf difference < -5000 Then
         Else
-            'highenoughline = False
+            highenoughline = False
             If Math.Abs(famdelta) > 1000 Or Math.Abs(famgamma) > 250 Then
                 Return True
             End If

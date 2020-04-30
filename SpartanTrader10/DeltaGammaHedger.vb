@@ -31,9 +31,10 @@ Module DeltaGammaHedger
                 var.ipfamilygamma = ipfamilygamma
                 'var.familySpeed = familySpeed
                 'var.ipfamilyspeed = ipfamilyspeed
+                If var.mtm >= 0.01 Then
+                    IntermediaryRecList.Add(var)
+                End If
             Next
-
-            IntermediaryRecList.AddRange(templist)
 
         End If
         'For Each element In MasterRecList
@@ -126,30 +127,25 @@ Module DeltaGammaHedger
     End Function
 
     Public Sub SolvePotential(potentialList As List(Of Transaction), targetDate As Date)
-
         Dim solver = SolverContext.GetContext()
         solver.ClearModel()
         Dim model = solver.CreateModel()
-        Dim tempname2 As String
-        Dim myval = 0
-        Dim Yvariable(potentialList.Count - 1)
-        Dim decisions2 As List(Of Decision) = Nothing
-        For i = 0 To potentialList.Count() - 1
-            Dim tempcounter = i
-            tempname2 = "Y" + tempcounter.ToString()
-            Yvariable(i) = tempname2
-            Dim tempDecision2 = New Decision(Domain.Real, tempname2)
-            model.AddDecision(tempDecision2)
-        Next
+        Dim controls As New Directive With {
+            .TimeLimit = 10000
+        }
+        'Dim tempname2 As String
+        'Dim myval = 0
+        'Dim Yvariable(potentialList.Count - 1)
+        'Dim decisions2 As List(Of Decision) = Nothing
+        'For i = 0 To potentialList.Count() - 1
+        '    Dim tempcounter = i
+        '    tempname2 = "Y" + tempcounter.ToString()
+        '    Yvariable(i) = tempname2
+        '    Dim tempDecision2 = New Decision(Domain.Real, tempname2)
+        '    model.AddDecision(tempDecision2)
+        'Next
 
-        Dim ycomponent = New SumTermBuilder(potentialList.Count())
-        For Each y In Yvariable
-            Dim yweight = model.Decisions.First(Function(it) it.Name = y)
-            ycomponent.Add(yweight)
-        Next
-        Dim yconstraintgeneral = ycomponent.ToTerm <= 2 * marginline
-        model.AddConstraint("YNumberConstraint", yconstraintgeneral)
-
+        'Dim ycomponent As New SumTermBuilder(potentialList.Count() - 1)
 
         For Each family In RecommendationFamily
             Dim currentlist = potentialList.FindAll(Function(x) x.familyTicker.Trim() = family.Trim())
@@ -158,7 +154,7 @@ Module DeltaGammaHedger
                 Dim tempname As String
                 Dim famdelta = currentlist(0).ipfamilydelta
                 Dim famgamma = currentlist(0).ipfamilygamma
-                'Dim famspeed = currentlist(0).ipfamilyspeed
+                Dim famspeed = currentlist(0).ipfamilyspeed
 
                 Dim Tvariable(currentlist.Count - 1)
                 For i = 0 To currentlist.Count() - 1
@@ -179,8 +175,9 @@ Module DeltaGammaHedger
                 Next
 
                 model.AddGoal("MinimizeT" + family, GoalKind.Minimize, objective.ToTerm())
-                Dim deltacomponent = New SumTermBuilder(20)
-                Dim gammacomponent = New SumTermBuilder(20)
+                Dim deltacomponent = New SumTermBuilder(currentlist.Count - 1)
+                Dim gammacomponent = New SumTermBuilder(currentlist.Count - 1)
+
 
                 For Each potential In currentlist
                     Dim weight = model.Decisions.First(Function(it) it.Name = potential.symbol)
@@ -191,47 +188,51 @@ Module DeltaGammaHedger
                 Dim deltaconstraint = deltacomponent.ToTerm() = -1 * famdelta
                 model.AddConstraint("Delta" + family, deltaconstraint)
 
-                Dim gammaconstraint = gammacomponent.ToTerm() = -1 * famgamma
-                model.AddConstraint("Gamma" + family, gammaconstraint)
 
+                Dim gammaconstraint = gammacomponent.ToTerm() = -1 * famgamma
+
+                'If Math.Abs(margin) <= marginline Then
+                model.AddConstraint("Gamma" + family, gammaconstraint)
+                'End If
 
                 'If highenoughline Then ' CHANGE HERE
                 '    Dim speedcomponent = New SumTermBuilder(potentialList.Count())
-                '    For Each potential In currentList
+                '    For Each potential In currentlist
                 '        Dim speedsum = model.Decisions.First(Function(it) it.Name = potential.symbol)
                 '        speedcomponent.Add(speedsum * potential.speed)
                 '    Next
                 '    Dim speedconstraint = speedcomponent.ToTerm() = -1 * famspeed
-                '    model.AddConstraint("Speed"+ family, speedconstraint)
+                '    model.AddConstraint("Speed" + family, speedconstraint)
                 'End If
 
                 For var = 0 To currentlist.Count - 1
                     Dim i = var
                     Dim qvalue = model.Decisions.First(Function(it) it.Name = currentlist(i).symbol)
                     Dim tvalue = model.Decisions.First(Function(it) it.Name = Tvariable(i))
-                    Dim yvalue = model.Decisions.First(Function(it) it.Name = Yvariable(myval))
+                    'Dim yvalue = model.Decisions.First(Function(it) it.Name = Yvariable(myval))
                     Dim qconstraint = qvalue * currentlist(i).mtm <= tvalue
                     Dim qconstraintneg = -1 * qvalue * currentlist(i).mtm <= tvalue
-                    Dim yconstraint = yvalue >= 0
-                    Dim yconstraintneg = yvalue >= -2 * qvalue
+                    'Dim yconstraint = yvalue >= 0
+                    'Dim yconstraintneg = yvalue >= -2 * qvalue * currentlist(i).mtm
+                    'ycomponent.Add(yvalue)
 
                     model.AddConstraint("TP" + family + i.ToString(), qconstraint)
                     model.AddConstraint("TN" + family + i.ToString(), qconstraintneg)
-                    model.AddConstraint("YP" + family + i.ToString(), yconstraint)
-                    model.AddConstraint("YN" + family + i.ToString(), yconstraintneg)
+                    'model.AddConstraint("YP" + family + i.ToString(), yconstraint)
+                    'model.AddConstraint("YN" + family + i.ToString(), yconstraintneg)
 
-                    myval += 1
+                    'myval += 1
                 Next
             End If
         Next
 
-
-
-
+        'Dim yconstraintgeneral = ycomponent.ToTerm <= 30000000
+        'model.AddConstraint("YNumberConstraint", yconstraintgeneral)
 
 
 
         Dim solution = solver.Solve()
+
         If (solution.Quality = SolverQuality.Optimal) Then
             For Each potentee In potentialList
                 Dim decision = model.Decisions.First(Function(it) it.Name = potentee.symbol)

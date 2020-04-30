@@ -84,7 +84,7 @@
         TE = CalcTE()
         TEpercent = TE / TaTPV
         sumTE += UpdateSumTE(targetDate)
-        deltaAdjustment = (Math.Max(200000 + TaTPV - TPV, 0)) / 12
+        deltaAdjustment = (Math.Max(200000 + TaTPV - TPV, 0)) / 36
 
     End Sub
 
@@ -141,7 +141,6 @@
             Case "Simulation"
                 CalcAllRecommendations(currentDate)
                 RoboExecuteAll(tdate)
-
             Case "StepSim"
                 RoboExecuteStepByStep(tdate)
             Case "Sync"

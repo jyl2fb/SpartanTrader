@@ -54,7 +54,7 @@
             Return False
         End If
 
-        If t.type = "SellShort" And t.totValue + margin > marginline Then
+        If t.type = "SellShort" And t.totValue + Math.Abs(margin) > marginline Then
             Return False
         End If
         'TODO add the other controls
