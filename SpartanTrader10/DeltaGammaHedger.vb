@@ -130,29 +130,26 @@ Module DeltaGammaHedger
         Dim solver = SolverContext.GetContext()
         solver.ClearModel()
         Dim model = solver.CreateModel()
-        'Dim tempname2 As String
+        Dim tempname2 As String
+        Dim myval = 0
+        Dim Yvariable(potentialList.Count - 1)
+        Dim decisions2 As List(Of Decision) = Nothing
+        For i = 0 To potentialList.Count() - 1
+            Dim tempcounter = i
+            tempname2 = "Y" + tempcounter.ToString()
+            Yvariable(i) = tempname2
+            Dim tempDecision2 = New Decision(Domain.Real, tempname2)
+            model.AddDecision(tempDecision2)
+        Next
 
-        'Dim Yvariable(potentialList.Count - 1)
-        'For i = 0 To potentialList.Count() - 1
-        '    Dim tempcounter = i
-        '    tempname2 = "Y" + tempcounter.ToString()
-        '    Yvariable(i) = tempname2
-        '    Dim tempDecision2 = New Decision(Domain.Real, tempname2)
-        '    decisions = decisions.Append(tempDecision2)
-        'Next
-        'Dim ycomponent = New SumTermBuilder(potentialList.Count())
-        'For Each y In Yvariable
-        '    Dim yweight = model.Decisions.First(Function(it) it.Name = y)
-        '    ycomponent.Add(yweight)
-        'Next
-        'Dim yconstraintgeneral = ycomponent.ToTerm <= 2 * marginline
-        'model.AddConstraint("YNumberConstraint", yconstraintgeneral)
-        'Dim yvalue = model.Decisions.First(Function(it) it.Name = Yvariable(i))
-        'Dim yconstraint = yvalue >= 0
-        'Dim yconstraintneg = yvalue >= -2 * qvalue
+        Dim ycomponent = New SumTermBuilder(potentialList.Count())
+        For Each y In Yvariable
+            Dim yweight = model.Decisions.First(Function(it) it.Name = y)
+            ycomponent.Add(yweight)
+        Next
+        Dim yconstraintgeneral = ycomponent.ToTerm <= 2 * marginline
+        model.AddConstraint("YNumberConstraint", yconstraintgeneral)
 
-        'model.AddConstraint("YP" + i.ToString(), yconstraint)
-        'model.AddConstraint("YN" + i.ToString(), yconstraintneg)
 
         For Each family In RecommendationFamily
             Dim currentlist = potentialList.FindAll(Function(x) x.familyTicker.Trim() = family.Trim())
@@ -174,7 +171,7 @@ Module DeltaGammaHedger
 
                 model.AddDecisions(decisions.ToArray())
 
-                Dim objective = New SumTermBuilder(currentlist.Count())
+                Dim objective = New SumTermBuilder(20)
 
                 For Each t In Tvariable
                     Dim TDecision = model.Decisions.First(Function(it) it.Name = t)
@@ -182,8 +179,8 @@ Module DeltaGammaHedger
                 Next
 
                 model.AddGoal("MinimizeT" + family, GoalKind.Minimize, objective.ToTerm())
-                Dim deltacomponent = New SumTermBuilder(currentlist.Count())
-                Dim gammacomponent = New SumTermBuilder(currentlist.Count())
+                Dim deltacomponent = New SumTermBuilder(20)
+                Dim gammacomponent = New SumTermBuilder(20)
 
                 For Each potential In currentlist
                     Dim weight = model.Decisions.First(Function(it) it.Name = potential.symbol)
@@ -212,15 +209,26 @@ Module DeltaGammaHedger
                     Dim i = var
                     Dim qvalue = model.Decisions.First(Function(it) it.Name = currentlist(i).symbol)
                     Dim tvalue = model.Decisions.First(Function(it) it.Name = Tvariable(i))
-                    Dim qconstraint = qvalue * potentialList(i).mtm <= tvalue
-                    Dim qconstraintneg = -1 * qvalue * potentialList(i).mtm <= tvalue
+                    Dim yvalue = model.Decisions.First(Function(it) it.Name = Yvariable(myval))
+                    Dim qconstraint = qvalue * currentlist(i).mtm <= tvalue
+                    Dim qconstraintneg = -1 * qvalue * currentlist(i).mtm <= tvalue
+                    Dim yconstraint = yvalue >= 0
+                    Dim yconstraintneg = yvalue >= -2 * qvalue
 
                     model.AddConstraint("TP" + family + i.ToString(), qconstraint)
                     model.AddConstraint("TN" + family + i.ToString(), qconstraintneg)
+                    model.AddConstraint("YP" + family + i.ToString(), yconstraint)
+                    model.AddConstraint("YN" + family + i.ToString(), yconstraintneg)
 
+                    myval += 1
                 Next
             End If
         Next
+
+
+
+
+
 
 
         Dim solution = solver.Solve()

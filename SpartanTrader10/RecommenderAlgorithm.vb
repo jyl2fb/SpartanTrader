@@ -13,35 +13,22 @@
     End Sub
 
     Public Sub CalcAllRecommendations(targetDate As Date)
-        IntermediaryRecList = New List(Of Transaction)
-        IntermediaryRecList.Clear()
+        If HedgingToday(targetDate) Then
+            IntermediaryRecList = New List(Of Transaction)
+            IntermediaryRecList.Clear()
+            Dim famtkr As String
+            For Each ticker In RecommendationFamily
+                famtkr = ticker.ToString.Trim()
+                GetPotentialList(famtkr, targetDate)
+            Next
 
-        For i = 0 To 11
-            CalcRecommendation(i, targetDate)
-        Next
+            SolvePotential(IntermediaryRecList, targetDate)
+            GetSolvedTransaction(IntermediaryRecList)
 
-        SolvePotential(IntermediaryRecList, targetDate)
-        GetSolvedTransaction(IntermediaryRecList)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        If julyoptionssold = False Then
-            If targetDate.Month = 7 Then
-                SellJulyOptions(targetDate)
+            If julyoptionssold = False Then
+                If targetDate.Month = 7 Then
+                    SellJulyOptions(targetDate)
+                End If
             End If
         End If
 
